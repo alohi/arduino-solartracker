@@ -57,7 +57,9 @@ float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 int Status;
 
 // Boot Test
+#ifndef DEBUG
 bootTest();
+#endif
 
 // Infinite loop (It will run continuosly)
 while(1)
@@ -234,6 +236,24 @@ if(ss >= DATA_LOG_SMS_INTERVAL)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 
+
+// For debugging
+#ifdef DEBUG
+Serial.print(_humi);
+Serial.write(0x09);
+Serial.print(_temp);
+Serial.write(0x09);
+Serial.print(_ldr1);
+Serial.write(0x09);
+Serial.print(_ldr2);
+Serial.write(0x09);
+Serial.print(_ldr3);
+Serial.write(0x09);
+Serial.print(_ldr4);
+Serial.write(0x09);
+Serial.println();
+delay(_DEBUG_UART_PRINT_DELAY_);
+#endif
 }
 }
 
@@ -242,28 +262,47 @@ void bootTest(void)
   unsigned char i = 0;
   lcd.setCursor(0,0);
   lcd.print(BOOTMSG1);
+  
+  #ifdef DEBUG
+  Serial.println(BOOTMSG1);
+  #endif
+  
   lcd.setCursor(0,1);
   for(i = 0;i<16;i++)
   {
-    lcd.write('.');
+      lcd.write('.');
+    
+      #ifdef DEBUG
+      Serial.write('.');
+      #endif
+    
     delay(LCD_INITIAL_SLOW_DELAY);
   }
   delay(StartUpDelay);
   lcd.clear();
+  
+  #ifdef DEBUG
+  Serial.println();
+  #endif
   
   // GSM Modem test
   // If detected
   if(myModem.detectModem() == 1)
   {
   lcd.print(BOOTMSG2);
+  
+  #ifdef DEBUG
+  Serial.println(BOOTMSG2);
+  #endif
+  
   ss = 0;
   #ifdef STARTUP_ALERT_SMS == 1
-  myModem.sendSms(DAQ_SERVER_NO,BOOTMSG3);
+  myModem.sendSms(DAQ_SERVER_NO,START_UP_ALERT_SMS);
   #elif  STARTUP_ALERT_SMS == 2
-  myModem.sendSms(USER_NO,BOOTMSG3);
+  myModem.sendSms(USER_NO,START_UP_ALERT_SMS);
   #elif  STARTUP_ALERT_SMS == 3
-  myModem.sendSms(DAQ_SERVER_NO,BOOTMSG3);
-  myModem.sendSms(USER_NO,BOOTMSG3);
+  myModem.sendSms(DAQ_SERVER_NO,START_UP_ALERT_SMS);
+  myModem.sendSms(USER_NO,START_UP_ALERT_SMS);
   
   // Through an error
   #else
@@ -274,9 +313,19 @@ void bootTest(void)
   // If not detected
   else
   {
-  lcd.print(BOOTMSG4);
+  lcd.print(BOOTMSG3);
+
+  #ifdef DEBUG
+  Serial.println(BOOTMSG3);
+  #endif  
+
   lcd.setCursor(0,1);
-  lcd.print(BOOTMSG5);
+  lcd.print(BOOTMSG4);
+  
+  #ifdef DEBUG
+  Serial.println(BOOTMSG4);
+  #endif
+  
   ss = 0;
   Timer1.detachInterrupt();       // stop timer interrupt
   Timer1.stop();
@@ -286,9 +335,19 @@ void bootTest(void)
   delay(StartUpDelay);
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print(BOOTMSG6);
+  lcd.print(BOOTMSG5);
+
+  #ifdef DEBUG
+  Serial.println(BOOTMSG5);
+  #endif
+  
   lcd.setCursor(0,1);
-  lcd.print(BOOTMSG7);
+  lcd.print(BOOTMSG6);
+
+  #ifdef DEBUG
+  Serial.println(BOOTMSG6);
+  #endif
+  
   delay(StartUpDelay);
   lcd.clear();
 }

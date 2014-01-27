@@ -30,7 +30,7 @@
 #define __config_h__
 
 // Build Configuration
-//#define DEBUG
+#define DEBUG
 //#define RELEASE
 
 // Includes
@@ -109,10 +109,15 @@ extern volatile unsigned int ss;
 // Upper and lower limits
 #define HUMID_UPPER_LIMIT 500
 #define HUMID_LOWER_LIMIT 100
-#define TEMPR_UPPER_LIMIT 40
+#define TEMPR_UPPER_LIMIT 30
 #define TEMPR_LOWER_LIMIT 20
 
 #define LCD_INITIAL_SLOW_DELAY 300
+
+
+#ifdef DEBUG
+#define _DEBUG_UART_PRINT_DELAY_ 200
+#endif
 
 #endif
 

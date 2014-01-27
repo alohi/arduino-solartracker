@@ -30,17 +30,17 @@
 
 #define BOOTMSG1 "Wait initiating.."
 #define BOOTMSG2 "Modem Detcted"
-#define BOOTMSG3 "Device is started"
-#define BOOTMSG4 "Modem Not detected"
-#define BOOTMSG5 "Device is ideal"
-#define BOOTMSG6 "Device initiated"
-#define BOOTMSG7 "Successfully"
+#define BOOTMSG3 "Modem Not detected"
+#define BOOTMSG4 "Device is ideal"
+#define BOOTMSG5 "Device initiated"
+#define BOOTMSG6 "Successfully"
 
 #define USERMSG1 "High Humidity"
 #define USERMSG2 "Low humidity"
 #define USERMSG3 "High Temp"
 #define USERMSG4 "Low Temp"
 
+#define START_UP_ALERT_SMS "Device Started"
 
 
 #endif

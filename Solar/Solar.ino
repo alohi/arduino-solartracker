@@ -55,9 +55,14 @@ void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 int Status;
+
+// Boot Test
 bootTest();
+
+// Infinite loop (It will run continuosly)
 while(1)
 {
+// Read All the datas
 _humi = mySensors.getHumi();
 _temp = mySensors.getTemp(DEGC);
 _ldr1 = mySensors.getLight(1);
@@ -65,10 +70,13 @@ _ldr2 = mySensors.getLight(2);
 _ldr3 = mySensors.getLight(3);
 _ldr4 = mySensors.getLight(4);
 
+// Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
 {
   #if ALERT_TYPE == 0
   myModem.connectCall(USER_NO);
+  ////////////////// Display LCD
+  ////////////////// Add here
   
   #elif ALERT_TYPE == 1 || ALERT_TYPE == 2 || ALERT_TYPE == 3
   if(_humi > HUMID_UPPER_LIMIT)
@@ -92,56 +100,113 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
      Status = 4;
   }
   
-    
    if(Status == 0)
    {
              #if ALERT_TYPE == 1
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG1);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 2
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 3
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #endif
    }
    else if(Status == 1)
    {
              #if ALERT_TYPE == 1
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG2);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 2
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 3
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG2);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #endif
    }
     else if(Status == 2)
     {
              #if   ALERT_TYPE == 1
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG3);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 2
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
+             ////////////////// Display LCD
+             ////////////////// Add here 
              #elif ALERT_TYPE == 3
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #endif
     }
-    else if(Status == 4)
+    else if(Status == 3)
         {
              #if   ALERT_TYPE == 1
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG4);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #elif ALERT_TYPE == 2
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
              #elif ALERT_TYPE == 3
+             ////////////////// Display LCD
+             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG4);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
+             ////////////////// Display LCD
+             ////////////////// Add here
              #endif
         }
-        
+    else
+    {
+      // Its invalid
+      // Dummy entry
+    }
+  
+   // Put Invalid entry value for status
+   Status = 10;
+  
+   // Through an error      
    #else
    #error "Invalid 'ALERT_TYPE' macro"   
+   
    #endif
 }
+
+// Data Logging Condition
 if(ss >= DATA_LOG_SMS_INTERVAL)
 {
   // temporary disable interrupt and stop the timer
@@ -156,10 +221,19 @@ if(ss >= DATA_LOG_SMS_INTERVAL)
   // Send to User mobile
   #elif DATA_LOG_MODE == 2
   // Send to both
+  
+  // Through an error
   #else
   #error "Inavlid 'DATA_LOG_MODE' macro"
+  
   #endif
 }
+
+// Solar panel rotation logic
+// Add Logic here
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+
 }
 }
 
@@ -190,8 +264,11 @@ void bootTest(void)
   #elif  STARTUP_ALERT_SMS == 3
   myModem.sendSms(DAQ_SERVER_NO,BOOTMSG3);
   myModem.sendSms(USER_NO,BOOTMSG3);
+  
+  // Through an error
   #else
   #error "Invalid value for 'STARTUP_ALERT_SMS' macro"
+  
   #endif
   }
   // If not detected

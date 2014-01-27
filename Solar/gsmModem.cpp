@@ -28,14 +28,8 @@
 #include "config.h"
 #include "gsmModem.h"
 
-// Globals
-const char ConnectCallCmd[10]    = "ATD";
-const char disConnectCallCmd[10] = "ATH";
-const char GsmTestCmd[3]         = "AT";
-const char GsmAck[4]             = "OK";   
-const char GsmAckIndex[4]        = {2,3};
 
-/*** Method      : NA
+/*** Method      : detectModem
 **   Parameters  : None
 **   Return      : unsigned char (0 or 1)
 **   Description : This will detect GSM Modem (Return 1: Detected, Return 0: Not Detected) 
@@ -46,7 +40,7 @@ unsigned char i;
 volatile char tempBuf[10];
 ss = 0;
 Serial.println(GsmTestCmd);
-for(i=0;i<=5;i++)
+for(i=0;i<=GsmAckLength;i++)
 {
   back:
   if(Serial.available())
@@ -62,7 +56,7 @@ for(i=0;i<=5;i++)
   goto back;
   }
 }
-if(tempBuf[GsmAckIndex[0]] == GsmAck[0] && tempBuf[GsmAckIndex[1]] == GsmAck[1])
+if(tempBuf[GsmAckIndex1] == GsmAckChar1 && tempBuf[GsmAckIndex2] == GsmAckChar2)
 {
 return 1;
 }
@@ -79,7 +73,17 @@ return 0;
 **/
 void gsmModem::sendSms(char *No,char *Msg)
 {
-  Serial.print("SMS Sent");
+  Serial.println(gsmSendSmsCmd1);
+  delay(5);
+  Serial.print(gsmSendSmsCmd2);
+  Serial.write('"');
+  Serial.print(No);
+  Serial.write('"');
+  Serial.println();
+  delay(5);
+  Serial.println(Msg);
+  delay(5);
+  Serial.write(ASCII_SUB);
 }
 
 /*** Method      : connectCall

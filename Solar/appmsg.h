@@ -18,39 +18,29 @@
 
 
 /***
-**   File       : gsmModem.h
+**   File       : appmsg.h
 **   Author     : Sriharsha
 **   Website    : www.zuna.in
 **   Email      : helpzuna@gmail.com
-**   Description: This is the GSM Modem (SIM300) driver include file for arduino
+**   Description: This file contains initial message strings
 ***/
 
-#ifndef __gsmModem_h__
-#define __gsmModem_h__
+#ifndef __appmsg_h__
+#define __appmsg_h__
 
-// Timeout for GSM Modem detect in seconds
-#define GSM_DETECT_TIMEOUT 10
+#define BOOTMSG1 "Wait initiating.."
+#define BOOTMSG2 "Modem Detcted"
+#define BOOTMSG3 "Device is started"
+#define BOOTMSG4 "Modem Not detected"
+#define BOOTMSG5 "Device is ideal"
+#define BOOTMSG6 "Device initiated"
+#define BOOTMSG7 "Successfully"
 
-#define ConnectCallCmd        "ATD"
-#define disConnectCallCmd     "ATH"
-#define GsmTestCmd            "AT"
-#define GsmAckChar1           'O'
-#define GsmAckChar2           'K'
-#define GsmAckIndex1           2
-#define GsmAckIndex2           3
-#define GsmAckLength           5
-#define gsmSendSmsCmd1        "AT+CMGF=1"
-#define gsmSendSmsCmd2        "AT+CMGS="
+#define USERMSG1 "High Humidity"
+#define USERMSG2 "Low humidity"
+#define USERMSG3 "High Temp"
+#define USERMSG4 "Low Temp"
 
-#define ASCII_SUB             0x1A
 
-class gsmModem
-{
-  public:
-  unsigned char detectModem(void);
-  void          sendSms(char*, char*); // Mob No,Sms Text
-  void          connectCall(char*);            // Mob No
-  void          disconnectCall(void);                   // Disconnect Ongoing call
-};
 
 #endif

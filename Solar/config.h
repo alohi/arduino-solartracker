@@ -37,7 +37,7 @@
 #include <Arduino.h>
 
 // Default Time in seconds for GSM Modem Data Logging
-#define GSM_TIME_OUT 900
+#define DATA_LOG_SMS_INTERVAL 900
 
 // Define Mobile Number
 #define DAQ_SERVER_NO "9342833087"
@@ -48,7 +48,6 @@
 #define LDR2 A1
 #define LDR3 A2
 #define LDR4 A3
-
 
 // Pin Definition for Humidity Sensor (HSM-20G)
 #define HUMI A4
@@ -87,17 +86,30 @@
 // Hardware timer initial time in micro seconds
 #define Timeus 1000
 
-// Timeout for GSM Modem detect in seconds
-#define GSM_DETECT_TIMEOUT 10
-
 // Delay for startup status indication for each test
 #define StartUpDelay 2000
+
+// 
+#define STARTUP_ALERT_SMS 1
+// 0 -> Disable, 1 -> To Daq server, 2 -> To user, 3 -> Both daq server and user
+
+// Alert type
+#define ALERT_TYPE 0
+//0 -> Call to user when system fails, 1 -> Send sms to user, 2 -> Send Sms to DAQ server, 3 -> Send sms to both user and DAQ server
 
 extern volatile unsigned int ss;
 
 // Temperature units
 #define DEGC 0
 #define DEGF 1
+
+// Upper and lower limits
+#define HUMID_UPPER_LIMIT 500
+#define HUMID_LOWER_LIMIT 100
+#define TEMPR_UPPER_LIMIT 40
+#define TEMPR_LOWER_LIMIT 20
+
+#define LCD_INITIAL_SLOW_DELAY 300
 
 #endif
 

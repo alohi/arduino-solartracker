@@ -97,6 +97,9 @@
 #define ALERT_TYPE 0
 //0 -> Call to user when system fails, 1 -> Send sms to user, 2 -> Send Sms to DAQ server, 3 -> Send sms to both user and DAQ server
 
+#define DATA_LOG_MODE 0
+//0 -> Send Sms to DAQ server,  2 -> Send sms to user, 3 -> Send sms to both user and DAQ server
+
 extern volatile unsigned int ss;
 
 // Temperature units

@@ -31,6 +31,9 @@
 // Globals
 const char ConnectCallCmd[10]    = "ATD";
 const char disConnectCallCmd[10] = "ATH";
+const char GsmTestCmd[3]         = "AT";
+const char GsmAck[4]             = "OK";   
+const char GsmAckIndex[4]        = {2,3};
 
 /*** Method      : NA
 **   Parameters  : None
@@ -39,8 +42,34 @@ const char disConnectCallCmd[10] = "ATH";
 **/
 unsigned char gsmModem::detectModem(void)
 {
-  // Add Gsm Modem detect logic now this is dummy
-  return 1;
+unsigned char i;
+volatile char tempBuf[10];
+ss = 0;
+Serial.println(GsmTestCmd);
+for(i=0;i<=5;i++)
+{
+  back:
+  if(Serial.available())
+  {
+  tempBuf[i] = Serial.read();
+  }
+  else if(ss == GSM_DETECT_TIMEOUT)
+  {
+  return 0;
+  }
+  else
+  {
+  goto back;
+  }
+}
+if(tempBuf[GsmAckIndex[0]] == GsmAck[0] && tempBuf[GsmAckIndex[1]] == GsmAck[1])
+{
+return 1;
+}
+else 
+{
+return 0;
+}
 }
 
 /*** Method      : sendSms

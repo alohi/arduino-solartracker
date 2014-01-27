@@ -56,6 +56,9 @@
 // Pin Definition for Temperature Sensor (DS1820)
 #define TEMP 2
 
+// Pin definition for Servo Motor Pulse input
+#define SERVO 3
+
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9
 #define LCD_EN 8
@@ -80,6 +83,17 @@
 
 // Returm value for method getTemp if channel number is invalid
 #define ChannelInvalid 0xFF
+
+// Hardware timer initial time in micro seconds
+#define Timeus 1000
+
+// Timeout for GSM Modem detect in seconds
+#define GSM_DETECT_TIMEOUT 10
+
+// Delay for startup status indication for each test
+#define StartUpDelay 2000
+
+extern volatile unsigned int ss;
 
 // Temperature units
 #define DEGC 0

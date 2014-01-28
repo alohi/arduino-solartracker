@@ -217,6 +217,11 @@ if(ss >= DATA_LOG_SMS_INTERVAL)
   // Clear Counts
   ss = 0;
   ms = 0;
+  
+// Add Solar Power Measurement Logic here
+/////////////////////////////////////////
+/////////////////////////////////////////
+
   #if DATA_LOG_MODE == 0
   // Send Data to DAQ_NO
   #elif DATA_LOG_MODE == 1

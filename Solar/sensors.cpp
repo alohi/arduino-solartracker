@@ -27,23 +27,11 @@
 
 #include "config.h"
 #include "sensors.h"
-#include "OneWire.h"
+#include "pcf8591.h"
 
-// An instnce of DS1820
-OneWire ds(TEMP);
-
-// Globals for 
-byte addr[8];
-
-/*** Method      : beginTemp
-**   Parameters  : None
-**   Return      : None
-**   Description : It will initiate the DS1820
-**/
-void Sensors::beginTemp(void)
+void Sensors::begin(void)
 {
-  ds.search(addr);
-  ds.reset_search();
+    pcf8591begin();
 }
 
 /*** Method      : getTemp
@@ -53,38 +41,8 @@ void Sensors::beginTemp(void)
 **/
 float Sensors::getTemp(unsigned char tempUnit)
 {
-  byte i;
-  byte data[12];
-  float celsius, fahrenheit;
-  
-  ds.reset();
-  ds.select(addr);
-  ds.write(0x44, 1);        // start conversion, with parasite power on at the end
-  
-// Delay 750ms removed
-  
-  ds.reset();
-  ds.select(addr);    
-  ds.write(0xBE);        
-  for ( i = 0; i < 9; i++)
-  {          
-    data[i] = ds.read();
-  }
-
-    unsigned int raw = (data[1] << 8) | data[0];
-
-    raw = raw << 3; 
-    if (data[7] == 0x10) 
-    {
-      raw = (raw & 0xFFF0) + 12 - data[6];
-    }
-
-  celsius = (float)raw / 16.0;
-  fahrenheit = celsius * 1.8 + 32.0;
-  if(tempUnit == DEGC)
-  return celsius;
-  else
-  return fahrenheit;
+int val = pcf8591analogRead(TEMP);
+return val;
 }
 
 /*** Method      : getHumi
@@ -94,7 +52,8 @@ float Sensors::getTemp(unsigned char tempUnit)
 **/
 float Sensors::getHumi(void)
 {
- return calcHum(analogRead(HUMI));
+ int val = pcf8591analogRead(HUMI);
+ return val;
 }
 
 unsigned long Sensors::getLux(unsigned int avg)

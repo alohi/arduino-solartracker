@@ -28,15 +28,17 @@
 #ifndef __sensors_h__
 #define __sensors_h__
 
+
+
 // Define a class
 class Sensors
 {
   public:
   float getTemp(unsigned char);
   float getHumi(void);
+  void begin(void);
   unsigned long getLight(unsigned char);
   unsigned long getLux(unsigned int);
-  void beginTemp(void);
 };
 
 #endif

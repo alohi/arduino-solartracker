@@ -1,11 +1,12 @@
 #include "gsmModem.h"
 #include "sensors.h"
 #include "config.h"
-#include "OneWire.h"
 #include "TimerOne.h"
 #include "appmsg.h"
 #include <LiquidCrystal.h>
 #include <Servo.h>
+#include <Wire.h>
+#include "pcf8591.h"
 
 // Globals for Timer Calculation
 volatile unsigned int ms = 0;
@@ -31,22 +32,22 @@ Sensors mySensors;
 // An instance for servo motor
 Servo myServo;
 
+
 void setup(void)
 { 
+
   lcd.begin(16,2);
   lcd.setCursor(0,0);
-  Serial.begin(9600);
+  Serial.begin(9600);  
   pinMode(LDR1,INPUT);
   pinMode(LDR2,INPUT);
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
   pinMode(TEMP,INPUT);
   pinMode(HUMI,INPUT);
-  // Initiate temperature sensor (It will search address of onewire device and store it in a global)
-  mySensors.beginTemp();
+mySensors.begin();
   // Attach servo motor pin
   myServo.attach(SERVO);
-  
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
 }
@@ -55,6 +56,18 @@ void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 int Status;
+
+
+while(1)
+{
+  _humi = mySensors.getHumi();
+_temp = mySensors.getTemp(DEGC);
+Serial.print(_temp);
+Serial.write(9);
+Serial.print(_humi);
+Serial.println();
+  delay(300);
+}
 
 // Boot Test
 #ifndef DEBUG
@@ -212,8 +225,8 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
 if(ss >= DATA_LOG_SMS_INTERVAL)
 {
   // temporary disable interrupt and stop the timer
-  Timer1.detachInterrupt();       // stop timer interrupt
-  Timer1.stop();
+/*  Timer1.detachInterrupt();       // stop timer interrupt
+  Timer1.stop();*/
   // Clear Counts
   ss = 0;
   ms = 0;
@@ -293,6 +306,7 @@ void bootTest(void)
   // GSM Modem test
   // If detected
   if(myModem.detectModem() == 1)
+  
   {
   lcd.print(BOOTMSG2);
   

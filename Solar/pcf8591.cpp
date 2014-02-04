@@ -9,12 +9,13 @@
 #include <avr/pgmspace.h>
 #include <WProgram.h>
 #include "PCF8591.h"
+#include <Arduino.h>
 
 void pcf8591beginWithAdd(uint8_t addr)
 {
- if (addr > 7) {
+/* if (addr > 7) {
     addr = 7;
-  }
+  }*/
   Wire.begin();
 
   //Send registers (defaults)
@@ -22,8 +23,6 @@ void pcf8591beginWithAdd(uint8_t addr)
   Wire.beginTransmission(PCF8591_ADDRESS);
   //2nd Byte
   Wire.write(0x00); //No registers set....  Don't want anything special
-  //3rd Byte
-  Wire.write(0x00);
   Wire.endTransmission();
 }
 
@@ -34,21 +33,21 @@ void pcf8591begin(void)
 
 int pcf8591analogRead(uint8_t p) 
 {
-  // only 8 bits!
-  if (p > 3)
-    return 0;
-  uint8_t retValue=0;
+  volatile uint8_t retValue=0;
   // read the current GPIO
   Wire.beginTransmission(PCF8591_ADDRESS);
   Wire.write(p);
   Wire.endTransmission();        // stop transmitting
-  
+  delayMicroseconds(100);
   Wire.requestFrom(PCF8591_ADDRESS, 1);
-  while(Wire.available())
-  {
-  retValue=Wire.read();
-  }
+while(Wire.available())
+{
+	retValue = Wire.read();
+}
+
+
   Wire.endTransmission();
   return (retValue);
 }
+
 

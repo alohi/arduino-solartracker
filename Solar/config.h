@@ -50,13 +50,17 @@
 #define LDR4 A3
 
 // Pin Definition for Humidity Sensor (HSM-20G)
-#define HUMI 0
+#define HUMI 1 // 1st pin of 8591 (Due to error) That has to fix 
+// Fixed
 
 // Pin Definition for Temperature Sensor (DS1820)
-#define TEMP 1
+#define TEMP 2  // 2nd pin of 8591 (Due to error) That has to fix
 
 // Pin definition for Servo Motor Pulse input
-#define SERVO 3
+#define SERVO 2
+
+#define CUR 3  
+#define VOL 4
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

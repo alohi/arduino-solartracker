@@ -28,15 +28,15 @@
     <BootSegment>0</BootSegment>
     <AsfFrameworkConfig>
       <framework-data>
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.3.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.3.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -50,68 +50,27 @@
         <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
+            <Value>__AVR_ATmega328p__</Value>
             <Value>__AVR_ATmega328P__</Value>
-            <Value>ARDUINO=105</Value>
+            <Value>ARDUINO=101</Value>
+            <Value>ARDUINO_MAIN</Value>
             <Value>F_CPU=16000000L</Value>
             <Value>__AVR__</Value>
+            <Value>__cplusplus</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
             <Value>D:\arduino-1.0.5\hardware\arduino\cores\arduino</Value>
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\avr\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\</Value>
@@ -128,68 +87,27 @@
         <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
+            <Value>__AVR_ATmega328p__</Value>
             <Value>__AVR_ATmega328P__</Value>
-            <Value>ARDUINO=105</Value>
+            <Value>ARDUINO=101</Value>
+            <Value>ARDUINO_MAIN</Value>
             <Value>F_CPU=16000000L</Value>
             <Value>__AVR__</Value>
+            <Value>__cplusplus</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
             <Value>D:\arduino-1.0.5\hardware\arduino\cores\arduino</Value>
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\avr\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\</Value>
@@ -208,6 +126,70 @@
         <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
       </AvrGccCpp>
     </ToolchainSettings>
+    <VisualMicroSettings>
+      <VisualMicroSettings>
+        <arduino.board.name>atmega328</arduino.board.name>
+        <arduino.board.desc>Arduino Duemilanove w/ ATmega328</arduino.board.desc>
+        <arduino.board.property_bag>name=Arduino Duemilanove w/ ATmega328
+upload.protocol=arduino
+upload.maximum_size=30720
+upload.speed=57600
+bootloader.low_fuses=0xFF
+bootloader.high_fuses=0xDA
+bootloader.extended_fuses=0x05
+bootloader.path=atmega
+bootloader.file=ATmegaBOOT_168_atmega328.hex
+bootloader.unlock_bits=0x3F
+bootloader.lock_bits=0x0F
+build.mcu=atmega328p
+build.f_cpu=16000000L
+build.core=arduino
+build.variant=standard
+runtime.ide.path=D:\arduino-1.0.5
+build.system.path=D:\arduino-1.0.5\hardware\arduino\system
+runtime.ide.version=105
+originalid=atmega328
+vm.platform.root.path=D:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\arduino10x
+vm.core.include=arduino.h
+ide.hint=Arduino 0023 and 1.0.x Ide
+ide.location.key=Arduino
+ide.location.ide.winreg=Arduino 1.0.x Application
+ide.location.sketchbook.winreg=Arduino 1.0.x Sketchbook
+ide.location.sketchbook.preferences=sketchbook.path
+ide.location.sketchbook.default=%MYDOCUMENTS%\arduino
+ide.location.preferences=%VM_APPDATA_ROAMING%\arduino\preferences.txt
+ide.default.package=arduino
+ide.default.platform=avr
+ide.multiplatform=true
+ide.includes=arduino.h
+ide.platformswithoutpackage=true
+ide.includes.fallback=wprogram.h
+ide.extension=ino
+ide.extension.fallback=pde
+ide.versionLTEQ=149
+ide.exe=arduino.exe
+ide.hosts=atmel
+ide.url=http://arduino.cc/en/Main/Software
+vm.debug=true
+software=ARDUINO
+ide.appid=arduino10x
+location.sketchbook=C:\Users\SRIHARSHA\Documents\Arduino
+build.board=AVR_ATMEGA328
+vm.boardsource.path=D:\arduino-1.0.5\hardware\arduino
+vm.platformname.name=avr
+build.arch=AVR
+</arduino.board.property_bag>
+        <arduino.build.mcu>atmega328p</arduino.build.mcu>
+        <arduino.build.f_cpu>16000000L</arduino.build.f_cpu>
+        <arduino.build.core>arduino</arduino.build.core>
+        <arduino.upload.protocol>arduino</arduino.upload.protocol>
+        <arduino.upload.speed>57600</arduino.upload.speed>
+        <arduino.upload.maximum_size>30720</arduino.upload.maximum_size>
+        <visualmicro.application.name>arduino10x</visualmicro.application.name>
+        <visualmicro.package.name>arduino</visualmicro.package.name>
+        <visualmicro.platform.name>avr</visualmicro.platform.name>
+      </VisualMicroSettings>
+    </VisualMicroSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -220,68 +202,27 @@
         <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
+            <Value>__AVR_ATmega328p__</Value>
             <Value>__AVR_ATmega328P__</Value>
-            <Value>ARDUINO=105</Value>
+            <Value>ARDUINO=101</Value>
+            <Value>ARDUINO_MAIN</Value>
             <Value>F_CPU=16000000L</Value>
             <Value>__AVR__</Value>
+            <Value>__cplusplus</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
             <Value>D:\arduino-1.0.5\hardware\arduino\cores\arduino</Value>
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\avr\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\</Value>
@@ -298,68 +239,27 @@
         <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
+            <Value>__AVR_ATmega328p__</Value>
             <Value>__AVR_ATmega328P__</Value>
-            <Value>ARDUINO=105</Value>
+            <Value>ARDUINO=101</Value>
+            <Value>ARDUINO_MAIN</Value>
             <Value>F_CPU=16000000L</Value>
             <Value>__AVR__</Value>
+            <Value>__cplusplus</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
             <Value>D:\arduino-1.0.5\hardware\arduino\cores\arduino</Value>
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature</Value>
-            <Value>D:\arduino-1.0.5\libraries\DallasTemperature\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF</Value>
-            <Value>D:\arduino-1.0.5\libraries\DTMF\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM</Value>
-            <Value>D:\arduino-1.0.5\libraries\EEPROM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60</Value>
-            <Value>D:\arduino-1.0.5\libraries\ENC28J60\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora</Value>
-            <Value>D:\arduino-1.0.5\libraries\Esplora\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet</Value>
-            <Value>D:\arduino-1.0.5\libraries\Ethernet\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata</Value>
-            <Value>D:\arduino-1.0.5\libraries\Firmata\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd</Value>
-            <Value>D:\arduino-1.0.5\libraries\glcd\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM</Value>
-            <Value>D:\arduino-1.0.5\libraries\GSM\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108</Value>
-            <Value>D:\arduino-1.0.5\libraries\ks0108\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\NewSoftSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire</Value>
-            <Value>D:\arduino-1.0.5\libraries\OneWire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Control\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor</Value>
-            <Value>D:\arduino-1.0.5\libraries\Robot_Motor\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
-            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD</Value>
-            <Value>D:\arduino-1.0.5\libraries\SD\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo</Value>
             <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareRTC\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial</Value>
-            <Value>D:\arduino-1.0.5\libraries\SoftwareSerial\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI</Value>
-            <Value>D:\arduino-1.0.5\libraries\SPI\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
-            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT</Value>
-            <Value>D:\arduino-1.0.5\libraries\TFT\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi</Value>
-            <Value>D:\arduino-1.0.5\libraries\WiFi\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee</Value>
-            <Value>D:\arduino-1.0.5\libraries\XBee\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
+            <Value>D:\arduino-1.0.5\libraries\RTClib\utility</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\include\avr\</Value>
             <Value>d:\arduino-1.0.5\hardware\tools\avr\avr\</Value>
@@ -378,6 +278,70 @@
         <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
       </AvrGccCpp>
     </ToolchainSettings>
+    <VisualMicroSettings>
+      <VisualMicroSettings>
+        <arduino.board.name>atmega328</arduino.board.name>
+        <arduino.board.desc>Arduino Duemilanove w/ ATmega328</arduino.board.desc>
+        <arduino.board.property_bag>name=Arduino Duemilanove w/ ATmega328
+upload.protocol=arduino
+upload.maximum_size=30720
+upload.speed=57600
+bootloader.low_fuses=0xFF
+bootloader.high_fuses=0xDA
+bootloader.extended_fuses=0x05
+bootloader.path=atmega
+bootloader.file=ATmegaBOOT_168_atmega328.hex
+bootloader.unlock_bits=0x3F
+bootloader.lock_bits=0x0F
+build.mcu=atmega328p
+build.f_cpu=16000000L
+build.core=arduino
+build.variant=standard
+runtime.ide.path=D:\arduino-1.0.5
+build.system.path=D:\arduino-1.0.5\hardware\arduino\system
+runtime.ide.version=105
+originalid=atmega328
+vm.platform.root.path=D:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\arduino10x
+vm.core.include=arduino.h
+ide.hint=Arduino 0023 and 1.0.x Ide
+ide.location.key=Arduino
+ide.location.ide.winreg=Arduino 1.0.x Application
+ide.location.sketchbook.winreg=Arduino 1.0.x Sketchbook
+ide.location.sketchbook.preferences=sketchbook.path
+ide.location.sketchbook.default=%MYDOCUMENTS%\arduino
+ide.location.preferences=%VM_APPDATA_ROAMING%\arduino\preferences.txt
+ide.default.package=arduino
+ide.default.platform=avr
+ide.multiplatform=true
+ide.includes=arduino.h
+ide.platformswithoutpackage=true
+ide.includes.fallback=wprogram.h
+ide.extension=ino
+ide.extension.fallback=pde
+ide.versionLTEQ=149
+ide.exe=arduino.exe
+ide.hosts=atmel
+ide.url=http://arduino.cc/en/Main/Software
+vm.debug=true
+software=ARDUINO
+ide.appid=arduino10x
+location.sketchbook=C:\Users\SRIHARSHA\Documents\Arduino
+build.board=AVR_ATMEGA328
+vm.boardsource.path=D:\arduino-1.0.5\hardware\arduino
+vm.platformname.name=avr
+build.arch=AVR
+</arduino.board.property_bag>
+        <arduino.build.mcu>atmega328p</arduino.build.mcu>
+        <arduino.build.f_cpu>16000000L</arduino.build.f_cpu>
+        <arduino.build.core>arduino</arduino.build.core>
+        <arduino.upload.protocol>arduino</arduino.upload.protocol>
+        <arduino.upload.speed>57600</arduino.upload.speed>
+        <arduino.upload.maximum_size>30720</arduino.upload.maximum_size>
+        <visualmicro.application.name>arduino10x</visualmicro.application.name>
+        <visualmicro.package.name>arduino</visualmicro.package.name>
+        <visualmicro.platform.name>avr</visualmicro.platform.name>
+      </VisualMicroSettings>
+    </VisualMicroSettings>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="appmsg.h">
@@ -392,10 +356,10 @@
     <Compile Include="gsmModem.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="OneWire.cpp">
+    <Compile Include="pcf8591.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="OneWire.h">
+    <Compile Include="pcf8591.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sensors.cpp">

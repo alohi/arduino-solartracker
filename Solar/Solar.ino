@@ -7,11 +7,18 @@
 #include <Servo.h>
 #include <Wire.h>
 #include "pcf8591.h"
+#include "RTClib.h"
 
 // Globals for Timer Calculation
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
+#define ADJUST_RTC
+
+#ifdef ADJUST_RTC
+#define DATE "Feb 03 2014"
+#define TIME "22:08:00"
+#endif
 
 void timer1Isr(void)          // interrupt service routine that wraps a user defined function supplied by attachInterrupt
 {
@@ -31,21 +38,31 @@ gsmModem myModem;
 Sensors mySensors;
 // An instance for servo motor
 Servo myServo;
+// An instance of rtc
+RTC_DS1307 rtc;
 
 
 void setup(void)
 { 
-
-  lcd.begin(16,2);
-  lcd.setCursor(0,0);
-  Serial.begin(9600);  
   pinMode(LDR1,INPUT);
   pinMode(LDR2,INPUT);
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
   pinMode(TEMP,INPUT);
   pinMode(HUMI,INPUT);
-mySensors.begin();
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  mySensors.begin();
+  Wire.begin();
+  rtc.begin();
+  
+  #ifdef ADJUST_RTC
+  rtc.adjust(DateTime(DATE, TIME));
+//  rtc.adjust(DateTime(__DATE__, __TIME__));
+  #endif
+  
+  lcd.setCursor(0,0);
+  
   // Attach servo motor pin
   myServo.attach(SERVO);
   Timer1.initialize(Timeus);
@@ -55,18 +72,40 @@ mySensors.begin();
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
+int current;
 int Status;
-
+int a1,a2,a3,a4;
+DateTime now = rtc.now();
 
 while(1)
 {
-  _humi = mySensors.getHumi();
+/* _humi = mySensors.getHumi();
 _temp = mySensors.getTemp(DEGC);
+current = mySensors.getCurrent();
+now = rtc.now();
 Serial.print(_temp);
 Serial.write(9);
 Serial.print(_humi);
+Serial.write(9);
+Serial.print(current);
+Serial.write(9);*/
+/*Serial.print(now.minute());
+Serial.write(9);
+Serial.print(now.second());
+Serial.println();*/
+a1 = pcf8591analogRead(1);
+a2 = pcf8591analogRead(2);
+a3 = pcf8591analogRead(3);
+a4 = pcf8591analogRead(4);
+Serial.print(a1);
+Serial.write(9);
+Serial.print(a2);
+Serial.write(9);
+Serial.print(a3);
+Serial.write(9);
+Serial.print(a4);
 Serial.println();
-  delay(300);
+delay(500);
 }
 
 // Boot Test

@@ -29,6 +29,10 @@
 #include "sensors.h"
 #include "pcf8591.h"
 
+// Humidity Look Up Table
+/*const int   HumidArrayinRH[20]  = {10,20,30,40,50,60,70,80,90};
+const float HumidArrayinV[20]   = {0.74,0.95,1.31,1.68,2.02,2.37,2.69,2.99,3.19};*/
+
 void Sensors::begin(void)
 {
     pcf8591begin();
@@ -42,7 +46,12 @@ void Sensors::begin(void)
 float Sensors::getTemp(unsigned char tempUnit)
 {
 int val = pcf8591analogRead(TEMP);
-return val;
+float temp;
+temp = lm35_temp_conversion(val);
+if(tempUnit == DEGC)
+return temp;
+else
+return degreetoFaranheit(val);
 }
 
 /*** Method      : getHumi
@@ -53,7 +62,55 @@ return val;
 float Sensors::getHumi(void)
 {
  int val = pcf8591analogRead(HUMI);
- return val;
+ int humidRH;
+ int voltage = adc_to_voltage(val);
+ if(voltage >= 740 && voltage <= 950)
+ {
+	 humidRH = map(voltage,740,950,10,20);
+	 return humidRH;
+ }
+ else if(voltage >= 950 && voltage <= 1310)
+  {
+	  humidRH = map(voltage,950,1310,20,30);
+	  return humidRH;
+  }
+   else if(voltage >= 950 && voltage <= 1310)
+   {
+	   humidRH = map(voltage,950,1310,20,30);
+	   return humidRH;
+   }
+    else if(voltage >= 1310 && voltage <= 1680)
+    {
+	    humidRH = map(voltage,1310,1680,30,40);
+	    return humidRH;
+    }
+	 else if(voltage >= 1680 && voltage <= 2020)
+	 {
+		 humidRH = map(voltage,1680,2020,40,50);
+		 return humidRH;
+	 }
+	 	 else if(voltage >= 2020 && voltage <= 2370)
+	 	 {
+		 	 humidRH = map(voltage,2020,2370,50,60);
+		 	 return humidRH;
+	 	 }
+		  	 else if(voltage >= 2370 && voltage <= 2690)
+		  	 {
+			  	 humidRH = map(voltage,2370,2690,60,70);
+			  	 return humidRH;
+		  	 }
+			   		  	 else if(voltage >= 2690 && voltage <= 2990)
+			   		  	 {
+				   		  	 humidRH = map(voltage,2690,2990,70,80);
+				   		  	 return humidRH;
+			   		  	 }
+							  		  	 else if(voltage >= 2990 && voltage <= 3190)
+							  		  	 {
+								  		  	 humidRH = map(voltage,2370,2690,80,90);
+								  		  	 return humidRH;
+							  		  	 }
+											 else
+											 return 0;
 }
 
 unsigned long Sensors::getLux(unsigned int avg)
@@ -81,4 +138,10 @@ unsigned long Sensors::getLight(unsigned char Ch)
    default: return ChannelInvalid;
             break;
  }
+}
+
+int Sensors::getCurrent(void)
+{
+//	 int val = adc_to_voltage(pcf8591analogRead(CUR));
+	 return pcf8591analogRead(CUR);
 }

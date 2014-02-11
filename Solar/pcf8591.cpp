@@ -5,49 +5,30 @@
 // Code by Adafruit Industries/Limor Fried
 // License: LGPL
 
+extern "C"
+
 #include <Wire.h>
 #include <avr/pgmspace.h>
 #include <WProgram.h>
 #include "PCF8591.h"
 #include <Arduino.h>
 
-void pcf8591beginWithAdd(uint8_t addr)
-{
-/* if (addr > 7) {
-    addr = 7;
-  }*/
-  Wire.begin();
-
-  //Send registers (defaults)
-  //1st Byte
-  Wire.beginTransmission(PCF8591_ADDRESS);
-  //2nd Byte
-  Wire.write(0x00); //No registers set....  Don't want anything special
-  Wire.endTransmission();
-}
-
 void pcf8591begin(void) 
 {
-  pcf8591beginWithAdd(0);
+  Wire.begin(PCF8591_ADDRESS);
 }
 
-int pcf8591analogRead(uint8_t p) 
+void pcf8591Read(unsigned char *buff)
 {
-  volatile uint8_t retValue=0;
-  // read the current GPIO
-  Wire.beginTransmission(PCF8591_ADDRESS);
-  Wire.write(p);
-  Wire.endTransmission();        // stop transmitting
-  delayMicroseconds(100);
-  Wire.requestFrom(PCF8591_ADDRESS, 1);
-while(Wire.available())
-{
-	retValue = Wire.read();
-}
-
-
-  Wire.endTransmission();
-  return (retValue);
+ Wire.beginTransmission(PCF8591_ADDRESS); // wake up PCF8591
+ Wire.write(0x04); // control byte - read ADC0 then auto-increment
+ Wire.endTransmission(); // end tranmission
+ Wire.requestFrom(PCF8591_ADDRESS, 5);
+ buff[0]=Wire.read();
+ buff[0]=Wire.read();
+ buff[1]=Wire.read();
+ buff[2]=Wire.read();
+ buff[3]=Wire.read();
 }
 
 

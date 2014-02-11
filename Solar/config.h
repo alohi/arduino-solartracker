@@ -54,13 +54,13 @@
 // Fixed
 
 // Pin Definition for Temperature Sensor (DS1820)
-#define TEMP 2  // 2nd pin of 8591 (Due to error) That has to fix
+#define TEMP 0  // 2nd pin of 8591 (Due to error) That has to fix
 
 // Pin definition for Servo Motor Pulse input
 #define SERVO 2
 
-#define CUR 3  
-#define VOL 4
+#define CUR 2  
+#define VOL 3
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

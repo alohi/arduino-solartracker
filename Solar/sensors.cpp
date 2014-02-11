@@ -45,8 +45,11 @@ void Sensors::begin(void)
 **/
 float Sensors::getTemp(unsigned char tempUnit)
 {
-int val = pcf8591analogRead(TEMP);
+unsigned char buff[10];
+int val;
 float temp;
+pcf8591Read(buff);
+val = (int)buff[TEMP];
 temp = lm35_temp_conversion(val);
 if(tempUnit == DEGC)
 return temp;
@@ -61,9 +64,14 @@ return degreetoFaranheit(val);
 **/
 float Sensors::getHumi(void)
 {
- int val = pcf8591analogRead(HUMI);
+ int val;
  int humidRH;
- int voltage = adc_to_voltage(val);
+ int voltage;
+ unsigned char buff[10];
+ float temp;
+ pcf8591Read(buff);
+ val = (int)buff[HUMI];
+ voltage = adc_to_voltage(val);
  if(voltage >= 740 && voltage <= 950)
  {
 	 humidRH = map(voltage,740,950,10,20);
@@ -142,6 +150,11 @@ unsigned long Sensors::getLight(unsigned char Ch)
 
 int Sensors::getCurrent(void)
 {
-//	 int val = adc_to_voltage(pcf8591analogRead(CUR));
-	 return pcf8591analogRead(CUR);
+ int val;
+ int humidRH;
+ int voltage;
+ unsigned char buff[10];
+ float temp;
+ pcf8591Read(buff);
+ val = (int)buff[CUR];
 }

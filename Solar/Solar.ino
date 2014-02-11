@@ -79,7 +79,7 @@ DateTime now = rtc.now();
 
 while(1)
 {
-/* _humi = mySensors.getHumi();
+ _humi = mySensors.getHumi();
 _temp = mySensors.getTemp(DEGC);
 current = mySensors.getCurrent();
 now = rtc.now();
@@ -88,12 +88,12 @@ Serial.write(9);
 Serial.print(_humi);
 Serial.write(9);
 Serial.print(current);
-Serial.write(9);*/
+Serial.write(9);
 /*Serial.print(now.minute());
 Serial.write(9);
 Serial.print(now.second());
-Serial.println();*/
-a1 = pcf8591analogRead(1);
+Serial.println();
+/*a1 = pcf8591analogRead(1);
 a2 = pcf8591analogRead(2);
 a3 = pcf8591analogRead(3);
 a4 = pcf8591analogRead(4);
@@ -104,7 +104,7 @@ Serial.write(9);
 Serial.print(a3);
 Serial.write(9);
 Serial.print(a4);
-Serial.println();
+Serial.println();*/
 delay(500);
 }
 

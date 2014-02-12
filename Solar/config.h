@@ -30,14 +30,14 @@
 #define __config_h__
 
 // Build Configuration
-#define DEBUG
+//#define DEBUG
 //#define RELEASE
 
 // Includes
 #include <Arduino.h>
 
-// Default Time in seconds for GSM Modem Data Logging
-#define DATA_LOG_SMS_INTERVAL 900
+// Default Time in minutes for GSM Modem Data Logging
+#define DATA_LOG_SMS_INTERVAL 15
 
 // Define Mobile Number
 #define DAQ_SERVER_NO "9342833087"
@@ -50,13 +50,17 @@
 #define LDR4 A3
 
 // Pin Definition for Humidity Sensor (HSM-20G)
-#define HUMI A4
+#define HUMI 1 // 1st pin of 8591 (Due to error) That has to fix 
+// Fixed
 
 // Pin Definition for Temperature Sensor (DS1820)
-#define TEMP 2
+#define TEMP 0  // 2nd pin of 8591 (Due to error) That has to fix
 
 // Pin definition for Servo Motor Pulse input
-#define SERVO 3
+#define SERVO 2
+
+#define CUR 2  
+#define VOL 3
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

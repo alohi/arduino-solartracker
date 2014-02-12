@@ -48,9 +48,9 @@ class gsmModem
 {
   public:
   unsigned char detectModem(void);
-  void          sendSms(char*, char*); // Mob No,Sms Text
+  void          sendSms(char*, char*);         // Mob No,Sms Text
   void          connectCall(char*);            // Mob No
-  void          disconnectCall(void);                   // Disconnect Ongoing call
+  void          disconnectCall(void);          // Disconnect Ongoing call
 };
 
 #endif

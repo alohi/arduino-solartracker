@@ -28,15 +28,22 @@
 #ifndef __sensors_h__
 #define __sensors_h__
 
+
+
 // Define a class
 class Sensors
 {
   public:
   float getTemp(unsigned char);
   float getHumi(void);
+  void begin(void);
   unsigned long getLight(unsigned char);
   unsigned long getLux(unsigned int);
-  void beginTemp(void);
+  int getCurrent(void);
 };
+
+#define adc_to_voltage(val)  val * (5000/255)
+#define lm35_temp_conversion(val) adc_to_voltage(val) / 10
+#define degreetoFaranheit(val) (val * (9/5)) + 32
 
 #endif

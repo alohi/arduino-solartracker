@@ -30,7 +30,7 @@
 #define __config_h__
 
 // Build Configuration
-//#define DEBUG
+#define DEBUG
 //#define RELEASE
 
 // Includes

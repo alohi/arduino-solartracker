@@ -29,7 +29,7 @@
 #define __appmsg_h__
 
 #define BOOTMSG1 "Wait initiating.."
-#define BOOTMSG2 "Modem Detcted"
+#define BOOTMSG2 "Modem Detected"
 #define BOOTMSG3 "Modem Not detected"
 #define BOOTMSG4 "Device is ideal"
 #define BOOTMSG5 "Device initiated"

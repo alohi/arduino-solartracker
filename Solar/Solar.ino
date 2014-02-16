@@ -4,7 +4,7 @@
 #include "TimerOne.h"
 #include "appmsg.h"
 #include <LiquidCrystal.h>
-#include <Servo.h>
+#include <Stepper.h>
 #include <Wire.h>
 #include "pcf8591.h"
 #include "RTClib.h"
@@ -48,8 +48,6 @@ void setup(void)
   pinMode(LDR2,INPUT);
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
-  pinMode(TEMP,INPUT);
-  pinMode(HUMI,INPUT);
   Serial.begin(9600);
   lcd.begin(16,2);
   mySensors.begin();
@@ -58,12 +56,15 @@ void setup(void)
   
   #ifdef ADJUST_RTC
   rtc.adjust(DateTime(DATE, TIME));
-  rtc.adjust(DateTime(__DATE__, __TIME__));
   #endif
   
   lcd.setCursor(0,0);
   
-  // Attach servo motor pin
+  // Attach stepper motor pin
+  ///////////////////////////
+  ///////////////////////////
+  
+  // Timer 1
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
 }
@@ -71,14 +72,14 @@ void setup(void)
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-int value0,value1,value2,value3;
-int current;
-int Status;
-unsigned char a1,a2,a3,a4;
-unsigned char buff[5];
+float current;
+float Voltage;
+//int Status;
+//unsigned char a1,a2,a3,a4;
+//unsigned char buff[5];
 DateTime now = rtc.now();
 
-while(1)
+/*while(1)
 {
  _humi = mySensors.getHumi();
 _temp = mySensors.getTemp(DEGC);
@@ -95,7 +96,7 @@ Serial.write(9);
 Serial.print(now.second());
 Serial.println();
 delay(1000);
-}
+}*/
 
 // Boot Test
 #ifndef DEBUG
@@ -309,20 +310,12 @@ void bootTest(void)
   lcd.setCursor(0,0);
   lcd.print(BOOTMSG1);
   
-  #ifdef DEBUG
-  Serial.println(BOOTMSG1);
-  #endif
   
   lcd.setCursor(0,1);
   for(i = 0;i<16;i++)
   {
       lcd.write('.');
-    
-      #ifdef DEBUG
-      Serial.write('.');
-      #endif
-    
-    delay(LCD_INITIAL_SLOW_DELAY);
+      delay(LCD_INITIAL_SLOW_DELAY);
   }
   delay(StartUpDelay);
   lcd.clear();
@@ -333,8 +326,7 @@ void bootTest(void)
   
   // GSM Modem test
   // If detected
-  if(myModem.detectModem() == 1)
-  
+  if(myModem.detectModem() == 1)         
   {
   lcd.print(BOOTMSG2);
   
@@ -377,8 +369,12 @@ void bootTest(void)
   Timer1.detachInterrupt();       // stop timer interrupt
   Timer1.stop();
   // Infinite loop
-  while(true);
+  while(true)
+  {
+    ;
+  } 
   }
+  
   delay(StartUpDelay);
   lcd.clear();
   lcd.setCursor(0,0);

@@ -74,7 +74,7 @@ void loop(void)
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 float current;
 float Voltage;
-//int Status;
+int Status;
 //unsigned char a1,a2,a3,a4;
 //unsigned char buff[5];
 DateTime now = rtc.now();
@@ -245,7 +245,7 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   
    // Through an error      
    #else
-   #error "Invalid 'ALERT_TYPE' macro"   
+   #error "Invalid 'ALERT_TYPE' macro"  
    
    #endif
 }
@@ -257,8 +257,8 @@ if(ss >= DATA_LOG_SMS_INTERVAL)
 /*  Timer1.detachInterrupt();       // stop timer interrupt
   Timer1.stop();*/
   // Clear Counts
-  ss = 0;
-  ms = 0;
+/*  ss = 0;
+  ms = 0;*/
   
 // Add Solar Power Measurement Logic here
 /////////////////////////////////////////

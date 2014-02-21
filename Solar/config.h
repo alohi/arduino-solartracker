@@ -43,24 +43,37 @@
 #define DAQ_SERVER_NO "9342833087"
 #define USER_NO       "9342833087"
 
+// Number of steps in stepper motor
+#define STEPPER_STEPS 200
+
 // Pin Definition for LDR's
 #define LDR1 A0
 #define LDR2 A1
 #define LDR3 A2
 #define LDR4 A3
 
-// Pin Definition for Humidity Sensor (HSM-20G)
-#define HUMI 1 // 1st pin of 8591 (Due to error) That has to fix 
-// Fixed
+// External ADC
+///////////////////////////////////////////////////////////////////////////////////////
+																					 //
+// Pin Definition for Humidity Sensor (HSM-20G)                                      //
+#define HUMI  1 // Error fixed                                                       //                         
+                                                                                     //
+// Pin Definition for Temperature Sensor (DS1820)                                    //
+#define TEMP  0   // Error fixed                                                     //                        
+                                                                                     //
+// Voltage and current input for ADC (For Solar Power Calculations)                  //
+#define CUR   2                                                                      //
+#define VOL   3                                                                      //
+///////////////////////////////////////////////////////////////////////////////////////
 
-// Pin Definition for Temperature Sensor (DS1820)
-#define TEMP 0  // 2nd pin of 8591 (Due to error) That has to fix
+// Pin definition for Stepper Motor Control      
+#define STEPPER_INA_1 2
+#define STEPPER_INA_2 3
+#define STEPPER_INB_1 4
+#define STEPPER_INB_2 5
 
-// Pin definition for Servo Motor Pulse input
-#define SERVO 2
-
-#define CUR 2  
-#define VOL 3
+// Stepper Motor Speed in RPM
+#define STEPPER_SPEED_RPM 60
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9
@@ -84,7 +97,7 @@
 // Light Intensity Calculations
 #define calcLight(val)  val
 
-// Returm value for method getTemp if channel number is invalid
+// Return value for method getTemp if channel number is invalid
 #define ChannelInvalid 0xFF
 
 // Hardware timer initial time in micro seconds
@@ -98,10 +111,10 @@
 // 0 -> Disable, 1 -> To Daq server, 2 -> To user, 3 -> Both daq server and user
 
 // Alert type
-#define ALERT_TYPE 0
+#define ALERT_TYPE        0
 //0 -> Call to user when system fails, 1 -> Send sms to user, 2 -> Send Sms to DAQ server, 3 -> Send sms to both user and DAQ server
 
-#define DATA_LOG_MODE 0
+#define DATA_LOG_MODE     0
 //0 -> Send Sms to DAQ server,  2 -> Send sms to user, 3 -> Send sms to both user and DAQ server
 
 extern volatile unsigned int ss;
@@ -111,13 +124,12 @@ extern volatile unsigned int ss;
 #define DEGF 1
 
 // Upper and lower limits
-#define HUMID_UPPER_LIMIT 500
-#define HUMID_LOWER_LIMIT 100
-#define TEMPR_UPPER_LIMIT 30
-#define TEMPR_LOWER_LIMIT 20
+#define HUMID_UPPER_LIMIT      500
+#define HUMID_LOWER_LIMIT      100
+#define TEMPR_UPPER_LIMIT      30
+#define TEMPR_LOWER_LIMIT      20
 
 #define LCD_INITIAL_SLOW_DELAY 300
-
 
 #ifdef DEBUG
 #define _DEBUG_UART_PRINT_DELAY_ 200

@@ -8,6 +8,7 @@
 #include <Wire.h>
 #include "pcf8591.h"
 #include "RTClib.h"
+#include <Stepper.h>
 
 // Globals for Timer Calculation
 volatile unsigned int ms = 0;
@@ -37,34 +38,42 @@ gsmModem myModem;
 // An instance of Sensors class
 Sensors mySensors;
 // An instance for stepper motor
-
+Stepper myStepper(STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER_INB_2);
 // An instance of rtc
 RTC_DS1307 rtc;
 
 
 void setup(void)
 { 
+  // LDR Pin Configuration
   pinMode(LDR1,INPUT);
   pinMode(LDR2,INPUT);
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
-  Serial.begin(9600);
+  
+  // UART Initialization
+  Serial.begin(BAUD);
+  // LCD Initialization
   lcd.begin(16,2);
+  // Sensors Initialization
   mySensors.begin();
+  // TwoWire Initialization
   Wire.begin();
+  // RTC DS1307 Initialization
   rtc.begin();
   
+  // Adjust Date and time
   #ifdef ADJUST_RTC
   rtc.adjust(DateTime(DATE, TIME));
   #endif
   
+  // Initiate LCD cursor
   lcd.setCursor(0,0);
   
-  // Attach stepper motor pin
-  ///////////////////////////
-  ///////////////////////////
-  
-  // Timer 1
+  // Stepper Motor speed settings
+  myStepper.setSpeed(STEPPER_SPEED_RPM);
+   
+  // Timer 1 Initialization
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
 }
@@ -74,29 +83,30 @@ void loop(void)
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 float current;
 float Voltage;
-int Status;
-//unsigned char a1,a2,a3,a4;
-//unsigned char buff[5];
+int   Status;
+int   mm;
+int   hh;
+int   MM;
+int   HH;
+
 DateTime now = rtc.now();
 
-/*while(1)
+// Calculate next predicted interval for data logging
+MM = now.minute();
+HH = now.hour();
+if(MM > 44)
 {
- _humi = mySensors.getHumi();
-_temp = mySensors.getTemp(DEGC);
-current = mySensors.getCurrent();
-now = rtc.now();
-Serial.print(_temp);
-Serial.write(9);
-Serial.print(_humi);
-Serial.write(9);
-Serial.print(current);
-Serial.write(9);
-Serial.print(now.minute());
-Serial.write(9);
-Serial.print(now.second());
-Serial.println();
-delay(1000);
-}*/
+	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	if(HH == 23)
+	hh = 0;
+	else
+	hh = HH;
+}
+else
+{
+	mm = MM + DATA_LOG_SMS_INTERVAL;
+	hh = HH;
+}
 
 // Boot Test
 #ifndef DEBUG
@@ -113,6 +123,11 @@ _ldr1 = mySensors.getLight(1);
 _ldr2 = mySensors.getLight(2);
 _ldr3 = mySensors.getLight(3);
 _ldr4 = mySensors.getLight(4);
+
+// GET RTC Date and time
+now = rtc.now();
+MM = now.minute();
+HH = now.hour();
 
 // Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
@@ -251,14 +266,25 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
 }
 
 // Data Logging Condition
-if(ss >= DATA_LOG_SMS_INTERVAL)
+if(MM == mm && HH == hh)
 {
-  // temporary disable interrupt and stop the timer
-/*  Timer1.detachInterrupt();       // stop timer interrupt
-  Timer1.stop();*/
-  // Clear Counts
-/*  ss = 0;
-  ms = 0;*/
+	
+// Calculating next interval
+MM = now.minute();
+HH = now.hour();
+if(MM > 44)
+{
+	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	if(HH == 23)
+	hh = 0;
+	else
+	hh = HH;
+}
+else
+{
+	mm = MM + DATA_LOG_SMS_INTERVAL;
+	hh = HH;
+}
   
 // Add Solar Power Measurement Logic here
 /////////////////////////////////////////

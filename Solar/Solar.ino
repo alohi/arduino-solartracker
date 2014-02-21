@@ -136,6 +136,11 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   myModem.connectCall(USER_NO);
   ////////////////// Display LCD
   ////////////////// Add here
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(LCDMSG1);
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG2);
   
   #elif ALERT_TYPE == 1 || ALERT_TYPE == 2 || ALERT_TYPE == 3
   if(_humi > HUMID_UPPER_LIMIT)

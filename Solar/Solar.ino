@@ -38,7 +38,7 @@ gsmModem myModem;
 // An instance of Sensors class
 Sensors mySensors;
 // An instance for stepper motor
-Stepper myStepper(STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER_INB_2);
+Stepper myStepper(STEPER_STEPS,STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER_INB_2);
 // An instance of rtc
 RTC_DS1307 rtc;
 
@@ -89,7 +89,33 @@ int   hh;
 int   MM;
 int   HH;
 
+char c;
+
 DateTime now = rtc.now();
+
+//myStepper.step(100);
+while(1)
+{
+	if(Serial.available())
+	{
+			c = Serial.read();
+			switch(c)
+			{
+				case 'a' : myStepper.step(2);
+				break;
+				case 'b' : myStepper.step(-2);
+				break;
+			}
+	}
+
+	
+}
+
+/*  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(LCDMSG1);
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG2);*/
 
 // Calculate next predicted interval for data logging
 MM = now.minute();
@@ -109,7 +135,7 @@ else
 }
 
 // Boot Test
-#ifndef DEBUG
+#ifdef DEBUG
 bootTest();
 #endif
 

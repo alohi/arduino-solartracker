@@ -74,6 +74,7 @@
 
 // Stepper Motor Speed in RPM
 #define STEPPER_SPEED_RPM 60
+#define STEPER_STEPS      200
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

@@ -43,6 +43,11 @@ Stepper myStepper(STEPER_STEPS,STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER
 RTC_DS1307 rtc;
 
 
+void _test_sensors(void)
+{
+	
+}
+
 void setup(void)
 { 
   // LDR Pin Configuration
@@ -61,6 +66,12 @@ void setup(void)
   Wire.begin();
   // RTC DS1307 Initialization
   rtc.begin();
+  
+   if (! rtc.isrunning()) {
+	   Serial.println("RTC is NOT running!");
+	   // following line sets the RTC to the date & time this sketch was compiled
+	   rtc.adjust(DateTime(__DATE__, __TIME__));
+   }
   
   // Adjust Date and time
   #ifdef ADJUST_RTC
@@ -81,18 +92,18 @@ void setup(void)
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-float current;
+int current;
 float Voltage;
 int   Status;
 int   mm;
 int   hh;
 int   MM;
 int   HH;
-
 char c;
 
-DateTime now = rtc.now();
+ DateTime now = rtc.now();
 
+/*
 //myStepper.step(100);
 while(1)
 {
@@ -101,23 +112,34 @@ while(1)
 			c = Serial.read();
 			switch(c)
 			{
-				case 'a' : myStepper.step(2);
+				case 'a' : myStepper.step(1);
 				break;
-				case 'b' : myStepper.step(-2);
+				case 'b' : myStepper.step(-1);
 				break;
 			}
 	}
 
 	
 }
-
-/*  lcd.clear();
+*/
+ /* lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   lcd.setCursor(0,1);
   lcd.print(LCDMSG2);*/
+  
+  while (1)
+  {
+	  DateTime now = rtc.now();
+	  ss = now.second();
+	    Serial.println(ss,DEC);
+  }
+
+  
+  
 
 // Calculate next predicted interval for data logging
+//DateTime now = rtc.now();
 MM = now.minute();
 HH = now.hour();
 if(MM > 44)
@@ -149,8 +171,10 @@ _ldr1 = mySensors.getLight(1);
 _ldr2 = mySensors.getLight(2);
 _ldr3 = mySensors.getLight(3);
 _ldr4 = mySensors.getLight(4);
+current = mySensors.getCurrent();
 
 // GET RTC Date and time
+DateTime now = rtc.now();
 now = rtc.now();
 MM = now.minute();
 HH = now.hour();
@@ -354,6 +378,8 @@ Serial.write(0x09);
 Serial.print(_ldr3);
 Serial.write(0x09);
 Serial.print(_ldr4);
+Serial.write(0x09);
+Serial.print(current);
 Serial.write(0x09);
 Serial.println();
 delay(_DEBUG_UART_PRINT_DELAY_);

@@ -39,7 +39,8 @@ class Sensors
   void begin(void);
   unsigned long getLight(unsigned char);
   unsigned long getLux(unsigned int);
-  int getCurrent(void);
+  double getCurrent(void);
+  double getVoltage(void);
 };
 
 #define adc_to_voltage(val)  val * (5000/255)

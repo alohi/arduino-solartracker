@@ -92,54 +92,19 @@ void setup(void)
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-int current;
-float Voltage;
+double current;
+double Voltage;
 int   Status;
 int   mm;
 int   hh;
 int   MM;
 int   HH;
-char c;
 
  DateTime now = rtc.now();
 
-/*
-//myStepper.step(100);
-while(1)
-{
-	if(Serial.available())
-	{
-			c = Serial.read();
-			switch(c)
-			{
-				case 'a' : myStepper.step(1);
-				break;
-				case 'b' : myStepper.step(-1);
-				break;
-			}
-	}
-
-	
-}
-*/
- /* lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print(LCDMSG1);
-  lcd.setCursor(0,1);
-  lcd.print(LCDMSG2);*/
-  
-  while (1)
-  {
-	  DateTime now = rtc.now();
-	  ss = now.second();
-	    Serial.println(ss,DEC);
-  }
-
-  
   
 
 // Calculate next predicted interval for data logging
-//DateTime now = rtc.now();
 MM = now.minute();
 HH = now.hour();
 if(MM > 44)
@@ -172,6 +137,7 @@ _ldr2 = mySensors.getLight(2);
 _ldr3 = mySensors.getLight(3);
 _ldr4 = mySensors.getLight(4);
 current = mySensors.getCurrent();
+Voltage = mySensors.getVoltage();
 
 // GET RTC Date and time
 DateTime now = rtc.now();
@@ -193,6 +159,11 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   lcd.print(LCDMSG2);
   
   #elif ALERT_TYPE == 1 || ALERT_TYPE == 2 || ALERT_TYPE == 3
+  
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(LCDMSG1);
+  
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
@@ -222,15 +193,27 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
              myModem.sendSms(USER_NO,USERMSG1);
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG4);
              #elif ALERT_TYPE == 2
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG5);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
              ////////////////// Display LCD
              ////////////////// Add here
              #elif ALERT_TYPE == 3
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
              ////////////////// Display LCD
@@ -242,18 +225,30 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
              #if ALERT_TYPE == 1
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG2);
              ////////////////// Display LCD
              ////////////////// Add here
              #elif ALERT_TYPE == 2
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG5);             
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
              ////////////////// Display LCD
              ////////////////// Add here
              #elif ALERT_TYPE == 3
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG2);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
              ////////////////// Display LCD
@@ -265,18 +260,30 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
              #if   ALERT_TYPE == 1
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG3);
              ////////////////// Display LCD
              ////////////////// Add here
              #elif ALERT_TYPE == 2
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG5);   
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
              ////////////////// Display LCD
              ////////////////// Add here 
              #elif ALERT_TYPE == 3
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
              ////////////////// Display LCD
@@ -288,16 +295,28 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
              #if   ALERT_TYPE == 1
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG4);
              ////////////////// Display LCD
              ////////////////// Add here
              #elif ALERT_TYPE == 2
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG5); 
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
              #elif ALERT_TYPE == 3
              ////////////////// Display LCD
              ////////////////// Add here
+             lcd.setCursor(0,1);
+             lcd.print(LCDCLR);
+             lcd.setCursor(0,1);
+             lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG4);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
              ////////////////// Display LCD
@@ -323,7 +342,151 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
 // Data Logging Condition
 if(MM == mm && HH == hh)
 {
-	
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(LCDMSG7);
+  
+  #if DATA_LOG_MODE == 0
+  // Send Data to DAQ_NO
+  Serial.print("AT+CMGS=\"");
+  Serial.print(DAQ_SERVER_NO);
+  Serial.write('"');
+  Serial.println();
+  delay(100);
+  Serial.print("VOL: ");
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.print("CUR: ");
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print("TMP: ");
+  Serial.print(_temp);
+  Serial.write(',');
+  Serial.print("HUM: ");
+  Serial.print(_humi);
+  Serial.write(',');
+  Serial.print("LD1: ");
+  Serial.print(_ldr1);
+  Serial.write(',');
+  Serial.print("LD2: ");
+  Serial.print(_ldr2);
+  Serial.write(',');  
+  Serial.print("LD3: ");
+  Serial.print(_ldr3);
+  Serial.write(','); 
+  Serial.print("LD4: ");
+  Serial.print(_ldr4); 
+  Serial.write(0x1A);
+  
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG9);
+  #elif DATA_LOG_MODE == 1
+  // Send to User mobile
+  Serial.print("AT+CMGS=\"");
+  Serial.print(USER_NO);
+  Serial.write('"');
+  Serial.println();
+  delay(100);
+  Serial.print("VOL: ");
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.print("CUR: ");
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print("TMP: ");
+  Serial.print(_temp);
+  Serial.write(',');
+  Serial.print("HUM: ");
+  Serial.print(_humi);
+  Serial.write(',');
+  Serial.print("LD1: ");
+  Serial.print(_ldr1);
+  Serial.write(',');
+  Serial.print("LD2: ");
+  Serial.print(_ldr2);
+  Serial.write(',');  
+  Serial.print("LD3: ");
+  Serial.print(_ldr3);
+  Serial.write(','); 
+  Serial.print("LD4: ");
+  Serial.print(_ldr4); 
+  Serial.write(0x1A);  
+  
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG8);
+  
+  
+  #elif DATA_LOG_MODE == 2
+  // Send to both  
+  Serial.print("AT+CMGS=\"");
+  Serial.print(DAQ_SERVER_NO);
+  Serial.write('"');
+  Serial.println();
+  delay(100);
+  Serial.print("VOL: ");
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.print("CUR: ");
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print("TMP: ");
+  Serial.print(_temp);
+  Serial.write(',');
+  Serial.print("HUM: ");
+  Serial.print(_humi);
+  Serial.write(',');
+  Serial.print("LD1: ");
+  Serial.print(_ldr1);
+  Serial.write(',');
+  Serial.print("LD2: ");
+  Serial.print(_ldr2);
+  Serial.write(',');  
+  Serial.print("LD3: ");
+  Serial.print(_ldr3);
+  Serial.write(','); 
+  Serial.print("LD4: ");
+  Serial.print(_ldr4); 
+  Serial.write(0x1A);
+
+  Serial.print("AT+CMGS=\"");
+  Serial.print(USER_NO);
+  Serial.write('"');
+  Serial.println();
+  delay(100);
+  Serial.print("VOL: ");
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.print("CUR: ");
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print("TMP: ");
+  Serial.print(_temp);
+  Serial.write(',');
+  Serial.print("HUM: ");
+  Serial.print(_humi);
+  Serial.write(',');
+  Serial.print("LD1: ");
+  Serial.print(_ldr1);
+  Serial.write(',');
+  Serial.print("LD2: ");
+  Serial.print(_ldr2);
+  Serial.write(',');  
+  Serial.print("LD3: ");
+  Serial.print(_ldr3);
+  Serial.write(','); 
+  Serial.print("LD4: ");
+  Serial.print(_ldr4); 
+  Serial.write(0x1A);  
+  
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG10);
+  
+  // Through an error
+  #else
+  #error "Inavlid 'DATA_LOG_MODE' macro"
+  
+  #endif	
+  
 // Calculating next interval
 MM = now.minute();
 HH = now.hour();
@@ -340,23 +503,6 @@ else
 	mm = MM + DATA_LOG_SMS_INTERVAL;
 	hh = HH;
 }
-  
-// Add Solar Power Measurement Logic here
-/////////////////////////////////////////
-/////////////////////////////////////////
-
-  #if DATA_LOG_MODE == 0
-  // Send Data to DAQ_NO
-  #elif DATA_LOG_MODE == 1
-  // Send to User mobile
-  #elif DATA_LOG_MODE == 2
-  // Send to both
-  
-  // Through an error
-  #else
-  #error "Inavlid 'DATA_LOG_MODE' macro"
-  
-  #endif
 }
 
 // Solar panel rotation logic

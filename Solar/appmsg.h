@@ -40,9 +40,17 @@
 #define USERMSG3 "High Temp"
 #define USERMSG4 "Low Temp"
 
+#define LCDCLR   "                "
 #define LCDMSG1  "Alert"
 #define LCDMSG2  "Calling to User"
 #define LCDMSG3  "Calling to DAQ"
+#define LCDMSG4  "SMS TO USER"
+#define LCDMSG5  "SMS TO DAQ"
+#define LCDMSG6  "SMS TO USR,DAQ"
+#define LCDMSG7  "DATA LOG"
+#define LCDMSG8  "DATA TO USR"
+#define LCDMSG9  "DATA TO DAQ"
+#define LCDMSG10 "DATA TO BOTH"
 
 #define START_UP_ALERT_SMS "Device Started"
 

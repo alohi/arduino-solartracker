@@ -124,6 +124,10 @@ extern volatile unsigned int ss;
 #define DEGC 0
 #define DEGF 1
 
+
+// Voltage Mul factor
+#define SOLAR_MUL_FACTOR 4
+
 // Upper and lower limits
 #define HUMID_UPPER_LIMIT      500
 #define HUMID_LOWER_LIMIT      100

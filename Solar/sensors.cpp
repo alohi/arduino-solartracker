@@ -148,16 +148,28 @@ unsigned long Sensors::getLight(unsigned char Ch)
  }
 }
 
-int Sensors::getCurrent(void)
+double Sensors::getCurrent(void)
 {
  int val;
  int cur;
- int v;
+ double v;
  unsigned char buff[10];
  pcf8591Read(buff);
  val = (int)buff[CUR];
  v = adc_to_voltage(val);
  cur = map(v,2600,3200,0,10000);
  return cur;
-// return v;
 }
+
+double Sensors::getVoltage(void)
+{
+ double v;
+ int val;
+ unsigned char buff[10];
+ pcf8591Read(buff);
+ val = (int)buff[VOL];
+ v = adc_to_voltage(val);  
+ return v *  SOLAR_MUL_FACTOR;
+}
+
+

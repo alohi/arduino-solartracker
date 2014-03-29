@@ -15,6 +15,8 @@
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
+boolean motorStatus = false;
+
 #define ADJUST_RTC
 
 #ifdef ADJUST_RTC
@@ -57,6 +59,12 @@ void setup(void)
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
   
+  pinMode(EN1,OUTPUT);
+  pinMode(EN2,OUTPUT);
+  
+  digitalWrite(EN1,HIGH);
+    digitalWrite(EN2,HIGH);
+  
   // UART Initialization
   Serial.begin(BAUD);
   // LCD Initialization
@@ -93,17 +101,18 @@ void setup(void)
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-double current;
-double Voltage;
+float LDR1,LDR2;
+int current;
+unsigned char Voltage;
 int   Status;
 int   mm;
 int   hh;
 int   MM;
 int   HH;
 
- DateTime now = rtc.now();
+unsigned char dummy;
 
-  
+ DateTime now = rtc.now();
 
 // Calculate next predicted interval for data logging
 MM = now.minute();
@@ -123,20 +132,44 @@ else
 }
 
 // Boot Test
-#ifdef DEBUG
+/*#ifdef DEBUG
 bootTest();
-#endif
+#endif*/
+
+while(1)
+{
+/*	for(dummy = 0;dummy <60;dummy++)
+	{
+			myStepper.step(1);
+			delay(10);
+	}
+		for(dummy = 0;dummy <60;dummy++)
+		{
+			myStepper.step(-1);
+			delay(10);
+		}
+delay(1000);*/
+if(Serial.available())
+dummy = Serial.read();
+switch(dummy)
+{
+	case 'a' : myStepper.step(1);
+	           break;
+    case 'b' : myStepper.step(-1);
+	           break;
+}
+}
 
 // Infinite loop (It will run continuosly)
 while(1)
 {
 // Read All the datas
-_humi = mySensors.getHumi();
-_temp = mySensors.getTemp(DEGC);
-_ldr1 = mySensors.getLight(1);
-_ldr2 = mySensors.getLight(2);
-_ldr3 = mySensors.getLight(3);
-_ldr4 = mySensors.getLight(4);
+_humi   = mySensors.getHumi();
+_temp   = mySensors.getTemp(DEGC);
+_ldr1   = mySensors.getLight(1);
+_ldr2   = mySensors.getLight(2);
+_ldr3   = mySensors.getLight(3);
+_ldr4   = mySensors.getLight(4);
 current = mySensors.getCurrent();
 Voltage = mySensors.getVoltage();
 
@@ -485,7 +518,6 @@ if(MM == mm && HH == hh)
   // Through an error
   #else
   #error "Inavlid 'DATA_LOG_MODE' macro"
-  
   #endif	
   
 // Calculating next interval
@@ -510,6 +542,20 @@ else
 // Add Logic here
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
+LDR1 = _ldr2 - _ldr1;
+LDR2 = _ldr4 - _ldr3;
+
+
+if(LDR1 > LDR_THRESHOLD1)
+{
+	myStepper.step(-1);
+}
+else if(LDR1 < LDR_THRESHOLD2)
+{
+	myStepper.step(1);
+}
+
+
 
 
 // For debugging
@@ -528,6 +574,13 @@ Serial.print(_ldr4);
 Serial.write(0x09);
 Serial.print(current);
 Serial.write(0x09);
+Serial.print(Voltage);
+Serial.write(0x09);
+Serial.print(now.hour());
+Serial.write(0x09);
+Serial.print(now.minute());
+Serial.write(0x09);
+Serial.print(now.second());
 Serial.println();
 delay(_DEBUG_UART_PRINT_DELAY_);
 #endif

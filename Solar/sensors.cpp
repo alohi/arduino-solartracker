@@ -46,10 +46,17 @@ void Sensors::begin(void)
 float Sensors::getTemp(unsigned char tempUnit)
 {
 unsigned char buff[10];
+unsigned int Avg = 0;
+unsigned int i;
 int val;
 float temp;
+for(i=0;i<=100;i++)
+{
 pcf8591Read(buff);
-val = (int)buff[TEMP];
+//val = (int)buff[TEMP];
+Avg = Avg + (int)buff[TEMP];
+}
+val = Avg / 100;
 temp = lm35_temp_conversion(val);
 if(tempUnit == DEGC)
 return temp;
@@ -67,10 +74,18 @@ float Sensors::getHumi(void)
  int val;
  int humidRH;
  int voltage;
+ unsigned int Avg = 0;
+ unsigned int i;
  unsigned char buff[10];
  float temp;
+ 
+ for(i=0;i<=100;i++)
+ {
  pcf8591Read(buff);
- val = (int)buff[HUMI];
+ Avg = Avg + (int)buff[HUMI];
+// val = (int)buff[HUMI];
+ }
+ val = Avg / 100;
  voltage = adc_to_voltage(val);
  if(voltage >= 740 && voltage <= 950)
  {
@@ -133,43 +148,86 @@ unsigned long Sensors::getLux(unsigned int avg)
 **/
 unsigned long Sensors::getLight(unsigned char Ch)
 {
+ unsigned long ldr = 0;
+ unsigned char i;
  switch(Ch)
  {
-   case 1 : return calcLight(analogRead(LDR1));
+   case 1 : for(i=0;i<50;i++)
+            ldr = ldr + calcLight(analogRead(LDR1));
+			return ldr/50;
             break;
-   case 2 : return calcLight(analogRead(LDR2));
+   case 2 : for(i=0;i<50;i++)
+            ldr = ldr + calcLight(analogRead(LDR2));
+            return ldr/50;
             break;
-   case 3 : return calcLight(analogRead(LDR3));
+   case 3 : for(i=0;i<50;i++)
+            ldr = ldr + calcLight(analogRead(LDR3));
+            return ldr/50;
             break;
-   case 4 : return calcLight(analogRead(LDR4));
+   case 4 : for(i=0;i<50;i++)
+            ldr = ldr + calcLight(analogRead(LDR4));
+            return ldr/50;
             break;
    default: return ChannelInvalid;
             break;
  }
 }
 
-double Sensors::getCurrent(void)
+int Sensors::getCurrent(void)
 {
  int val;
  int cur;
- double v;
+ int v;
+ unsigned int i;
+ unsigned int Avg = 0;
  unsigned char buff[10];
+ 
+  for(i=0;i<=100;i++)
+ {
  pcf8591Read(buff);
- val = (int)buff[CUR];
+ Avg = Avg + (int)buff[CUR];
+// val = (int)buff[HUMI];
+ }
+ 
+/* pcf8591Read(buff);
+ val = (int)buff[CUR];*/
+ val = Avg / 100;
  v = adc_to_voltage(val);
- cur = map(v,2600,3200,0,10000);
- return cur;
+// cur = map(v,2600,3200,0,10000);
+ 
+ //cur = (v - 2600) * (10000 - 0) / (3200 - 2600) + 0;
+ //cur = (int)map(v,2470,2580,0,500);
+return v;
+//return v;
+//return v;
 }
 
-double Sensors::getVoltage(void)
+unsigned char Sensors::getVoltage(void)
 {
- double v;
+ int v;
  int val;
  unsigned char buff[10];
+ unsigned int Avg = 0;
+  unsigned int i;
+  
+   for(i=0;i<=100;i++)
+ {
  pcf8591Read(buff);
- val = (int)buff[VOL];
+ Avg = Avg + (int)buff[VOL];
+// val = (int)buff[HUMI];
+ }
+ 
+/* pcf8591Read(buff);
+ val = (int)buff[CUR];*/
+ val = Avg / 100;
+ 
+/* pcf8591Read(buff);
+ val = (int)buff[VOL];*/
  v = adc_to_voltage(val);  
- return v *  SOLAR_MUL_FACTOR;
+// return v;// *  SOLAR_MUL_FACTOR;
+return val;
 }
+
+
 
 

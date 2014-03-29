@@ -39,6 +39,9 @@
 // Default Time in minutes for GSM Modem Data Logging
 #define DATA_LOG_SMS_INTERVAL 15
 
+#define EN1  7
+#define EN2  8
+
 // Define Mobile Number
 #define DAQ_SERVER_NO "9342833087"
 #define USER_NO       "9342833087"
@@ -51,6 +54,9 @@
 #define LDR2 A1
 #define LDR3 A2
 #define LDR4 A3
+
+#define LDR_THRESHOLD1 10
+#define LDR_THRESHOLD2 10
 
 // External ADC
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +79,7 @@
 #define STEPPER_INB_2 5
 
 // Stepper Motor Speed in RPM
-#define STEPPER_SPEED_RPM 60
+#define STEPPER_SPEED_RPM 30
 #define STEPER_STEPS      200
 
 // Pin Definition for LCD (Hitachi 44780)
@@ -129,15 +135,15 @@ extern volatile unsigned int ss;
 #define SOLAR_MUL_FACTOR 4
 
 // Upper and lower limits
-#define HUMID_UPPER_LIMIT      500
-#define HUMID_LOWER_LIMIT      100
-#define TEMPR_UPPER_LIMIT      30
-#define TEMPR_LOWER_LIMIT      20
+#define HUMID_UPPER_LIMIT      70
+#define HUMID_LOWER_LIMIT      20
+#define TEMPR_UPPER_LIMIT      100
+#define TEMPR_LOWER_LIMIT      10
 
 #define LCD_INITIAL_SLOW_DELAY 300
 
 #ifdef DEBUG
-#define _DEBUG_UART_PRINT_DELAY_ 200
+#define _DEBUG_UART_PRINT_DELAY_ 500
 #endif
 
 #endif

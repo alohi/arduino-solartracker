@@ -15,7 +15,11 @@
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
+<<<<<<< HEAD
 boolean motorStatus = false;
+=======
+boolean StepperStatus = true;
+>>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
 
 #define ADJUST_RTC
 
@@ -41,7 +45,7 @@ gsmModem myModem;
 // An instance of Sensors class
 Sensors mySensors;
 // An instance for stepper motor
-Stepper myStepper(STEPER_STEPS,STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER_INB_2);
+Stepper myStepper(STEPPER_STEPS,STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPER_INB_2);
 // An instance of rtc
 RTC_DS1307 rtc;
 
@@ -132,7 +136,11 @@ else
 }
 
 // Boot Test
+<<<<<<< HEAD
 /*#ifdef DEBUG
+=======
+#ifndef DEBUG
+>>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
 bootTest();
 #endif*/
 
@@ -393,6 +401,9 @@ if(MM == mm && HH == hh)
   Serial.print("CUR: ");
   Serial.print(current);
   Serial.write(',');
+  Serial.print("POW: ");
+  Serial.print(current*Voltage);
+  Serial.write(',');
   Serial.print("TMP: ");
   Serial.print(_temp);
   Serial.write(',');
@@ -426,6 +437,9 @@ if(MM == mm && HH == hh)
   Serial.write(',');
   Serial.print("CUR: ");
   Serial.print(current);
+  Serial.write(',');
+  Serial.print("POW: ");
+  Serial.print(current*Voltage);
   Serial.write(',');
   Serial.print("TMP: ");
   Serial.print(_temp);
@@ -462,6 +476,9 @@ if(MM == mm && HH == hh)
   Serial.write(',');
   Serial.print("CUR: ");
   Serial.print(current);
+  Serial.write(',');
+  Serial.print("POW: ");
+  Serial.print(current*Voltage);
   Serial.write(',');
   Serial.print("TMP: ");
   Serial.print(_temp);
@@ -557,6 +574,21 @@ else if(LDR1 < LDR_THRESHOLD2)
 
 
 
+
+// Stepper Off Time
+if(now.hour() >= STEPEER_OFF_TIME)
+{
+StepperStatus = false;
+digitalWrite(STEPPER_EN1,LOW);
+digitalWrite(STEPPER_EN2,LOW);
+}
+// Stepper On Time
+else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)
+{
+StepperStatus = true;
+digitalWrite(STEPPER_EN1,HIGH);
+digitalWrite(STEPPER_EN2,HIGH);
+}
 
 // For debugging
 #ifdef DEBUG

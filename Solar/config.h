@@ -46,8 +46,7 @@
 #define DAQ_SERVER_NO "9342833087"
 #define USER_NO       "9342833087"
 
-// Number of steps in stepper motor
-#define STEPPER_STEPS 200
+
 
 // Pin Definition for LDR's
 #define LDR1 A0
@@ -77,10 +76,20 @@
 #define STEPPER_INA_2 3
 #define STEPPER_INB_1 4
 #define STEPPER_INB_2 5
+#define STEPPER_EN1   6
+#define STEPPER_EN2   7
+
+#define STEPEER_OFF_TIME 18
+#define STEPPER_ON_TIME  6
 
 // Stepper Motor Speed in RPM
+<<<<<<< HEAD
 #define STEPPER_SPEED_RPM 30
 #define STEPER_STEPS      200
+=======
+#define STEPPER_SPEED_RPM 60
+#define STEPPER_STEPS     200
+>>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

@@ -15,9 +15,8 @@
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
-
+unsigned int angle = 0;
 boolean motorStatus = false;
-
 boolean StepperStatus = true;
 
 
@@ -53,6 +52,34 @@ RTC_DS1307 rtc;
 void _test_sensors(void)
 {
 	
+}
+
+void enableMotor(void)
+{
+  digitalWrite(STEPPER_EN1,HIGH);
+  digitalWrite(STEPPER_EN2,HIGH);
+}
+
+void disableMotor(void)
+{
+  digitalWrite(STEPPER_EN1,LOW);
+  digitalWrite(STEPPER_EN2,LOW);
+}
+
+void testMotor(void)
+{
+  char c;
+  while(1)
+  {
+    if(Serial.available())
+    {
+      c = Serial.read();
+      if(c == 'f')
+      myStepper.step(1);
+      else if(c == 'b')
+      myStepper.step(-1);
+    }
+  }
 }
 
 void setup(void)
@@ -100,12 +127,19 @@ void setup(void)
   // Timer 1 Initialization
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
+  
+  pinMode(STEPPER_EN1,OUTPUT);
+  pinMode(STEPPER_EN2,OUTPUT);
+  
+  digitalWrite(STEPPER_EN1,HIGH);
+  digitalWrite(STEPPER_EN2,HIGH);
 }
 
 void loop(void)
 {
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
 float LDR1,LDR2;
+float LDR;
 int current;
 unsigned char Voltage;
 int   Status;
@@ -117,7 +151,7 @@ int   HH;
 unsigned char dummy;
 
  DateTime now = rtc.now();
-
+testMotor();
 // Calculate next predicted interval for data logging
 MM = now.minute();
 HH = now.hour();
@@ -135,37 +169,12 @@ else
 	hh = HH;
 }
 
-// Boot Test
-/*#ifdef DEBUG
-=======
-#ifndef DEBUG
->>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
-bootTest();
-#endif*/
 
-while(1)
-{
-/*	for(dummy = 0;dummy <60;dummy++)
-	{
-			myStepper.step(1);
-			delay(10);
-	}
-		for(dummy = 0;dummy <60;dummy++)
-		{
-			myStepper.step(-1);
-			delay(10);
-		}
-delay(1000);*/
-if(Serial.available())
-dummy = Serial.read();
-switch(dummy)
-{
-	case 'a' : myStepper.step(1);
-	           break;
-    case 'b' : myStepper.step(-1);
-	           break;
-}
-}
+#ifndef DEBUG
+bootTest();
+#endif
+
+
 
 // Infinite loop (It will run continuosly)
 while(1)
@@ -205,6 +214,7 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   
+  #ifdef SENSOR_ALERT
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
@@ -379,7 +389,9 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
    
    #endif
 }
+#endif
 
+#ifdef DATA_LOGGING
 // Data Logging Condition
 if(MM == mm && HH == hh)
 {
@@ -536,6 +548,8 @@ if(MM == mm && HH == hh)
   #error "Inavlid 'DATA_LOG_MODE' macro"
   #endif	
   
+  #endif
+  
 // Calculating next interval
 MM = now.minute();
 HH = now.hour();
@@ -558,36 +572,40 @@ else
 // Add Logic here
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-LDR1 = _ldr2 - _ldr1;
-LDR2 = _ldr4 - _ldr3;
+LDR1 = (_ldr2 + _ldr1) / 2;
+LDR2 = (_ldr4 + _ldr3) / 2;
+LDR = LDR1 - LDR2;
 
-
-if(LDR1 > LDR_THRESHOLD1)
+if(LDR > LDR_THRESHOLD1)
 {
 	myStepper.step(-1);
+        delay(STEP_DELAY__);
+        angle--;
 }
-else if(LDR1 < LDR_THRESHOLD2)
+else if(LDR < LDR_THRESHOLD2)
 {
 	myStepper.step(1);
+        delay(STEP_DELAY__);
+        angle++;
 }
 
 
 
 
+#ifdef NIGHT_SAVE_MODE
 // Stepper Off Time
 if(now.hour() >= STEPEER_OFF_TIME)
 {
 StepperStatus = false;
-digitalWrite(STEPPER_EN1,LOW);
-digitalWrite(STEPPER_EN2,LOW);
+disableMotor();
 }
 // Stepper On Time
 else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)
 {
 StepperStatus = true;
-digitalWrite(STEPPER_EN1,HIGH);
-digitalWrite(STEPPER_EN2,HIGH);
+enableMotor();
 }
+#endif
 
 // For debugging
 #ifdef DEBUG

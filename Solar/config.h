@@ -46,7 +46,7 @@
 #define DAQ_SERVER_NO "9342833087"
 #define USER_NO       "9342833087"
 
-
+#define STEP_DELAY__   3000
 
 // Pin Definition for LDR's
 #define LDR1 A0
@@ -54,8 +54,8 @@
 #define LDR3 A2
 #define LDR4 A3
 
-#define LDR_THRESHOLD1 10
-#define LDR_THRESHOLD2 10
+#define LDR_THRESHOLD1 +40
+#define LDR_THRESHOLD2 -40
 
 // External ADC
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +139,10 @@ extern volatile unsigned int ss;
 
 // Voltage Mul factor
 #define SOLAR_MUL_FACTOR 4
+
+//#define NIGHT_SAVE_MODE 
+//#define SENSOR_ALERT
+//#define DATA_LOGGING
 
 // Upper and lower limits
 #define HUMID_UPPER_LIMIT      70

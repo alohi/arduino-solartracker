@@ -154,7 +154,7 @@ unsigned long Sensors::getLight(unsigned char Ch)
  {
    case 1 : for(i=0;i<50;i++)
             ldr = ldr + calcLight(analogRead(LDR1));
-			return ldr/50;
+	    return ldr/50;
             break;
    case 2 : for(i=0;i<50;i++)
             ldr = ldr + calcLight(analogRead(LDR2));

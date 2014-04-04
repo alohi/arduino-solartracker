@@ -75,10 +75,31 @@ void testMotor(void)
     {
       c = Serial.read();
       if(c == 'f')
+      {
+        Serial.println("Motor FW");
       myStepper.step(1);
+      }
       else if(c == 'b')
+      {
+        Serial.println("Motor BW");
       myStepper.step(-1);
+      }
     }
+  }
+}
+
+void motorRotate(void)
+{
+  unsigned char i;
+  for(i=0;i<30;i++)
+  {
+  myStepper.step(1);
+  delay(3000);
+  }
+    for(i=0;i<30;i++)
+  {
+  myStepper.step(-1);
+  delay(3000);
   }
 }
 
@@ -151,7 +172,11 @@ int   HH;
 unsigned char dummy;
 
  DateTime now = rtc.now();
-testMotor();
+//testMotor();
+
+while(1)
+motorRotate();
+
 // Calculate next predicted interval for data logging
 MM = now.minute();
 HH = now.hour();

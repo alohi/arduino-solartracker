@@ -83,13 +83,10 @@
 #define STEPPER_ON_TIME  6
 
 // Stepper Motor Speed in RPM
-<<<<<<< HEAD
 #define STEPPER_SPEED_RPM 30
 #define STEPER_STEPS      200
-=======
 #define STEPPER_SPEED_RPM 60
 #define STEPPER_STEPS     200
->>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
 
 // Pin Definition for LCD (Hitachi 44780)
 #define LCD_RS 9

@@ -15,11 +15,11 @@
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
-<<<<<<< HEAD
+
 boolean motorStatus = false;
-=======
+
 boolean StepperStatus = true;
->>>>>>> 6aa1926d5aa5ec8d195f7b8bde67ed7f2ca46803
+
 
 #define ADJUST_RTC
 
@@ -136,7 +136,6 @@ else
 }
 
 // Boot Test
-<<<<<<< HEAD
 /*#ifdef DEBUG
 =======
 #ifndef DEBUG

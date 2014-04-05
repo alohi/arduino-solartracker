@@ -202,7 +202,7 @@ return v;
 //return v;
 }
 
-unsigned char Sensors::getVoltage(void)
+unsigned int Sensors::getVoltage(void)
 {
  int v;
  int val;

@@ -1,28 +1,32 @@
-#include "gsmModem.h"       // GSM Modem include file
-#include "sensors.h"        // Sensors include file
-#include "config.h"         // Configuration
-#include "TimerOne.h"		// Timer include file
-#include "appmsg.h"			// App messages 
-#include <LiquidCrystal.h>  // LCD driver include file
-#include <Stepper.h>        // Stepper motor driver include file
-#include <Wire.h>           // TWI
-#include "pcf8591.h"        // PCF8591 include file
-#include "RTClib.h"			// RTC include file
+#include "gsmModem.h"
+#include "sensors.h"
+#include "config.h"
+#include "TimerOne.h"
+#include "appmsg.h"
+#include <LiquidCrystal.h>
+#include <Stepper.h>
+#include <Wire.h>
+#include "pcf8591.h"
+#include "RTClib.h"
+#include <Stepper.h>
 
 
 // Globals for Timer Calculation
 volatile unsigned int ms = 0;
 volatile unsigned int ss = 0;
 
-unsigned int angle = 0;              // Initiate angle value
-boolean      motorStatus   = false;   
-boolean      StepperStatus = true;
+unsigned int angle = 0;
+boolean motorStatus = false;
+boolean StepperStatus = true;
 
 
-#define ADJUST_RTC // Uncomment if you want to set rtc
+#define ADJUST_RTC
 
+#ifdef ADJUST_RTC
+#define DATE "Feb 03 2014"
+#define TIME "22:08:00"
+#endif
 
-// Timer1 ISR (For every 'Timeus' (1000 us)) it will fire interrupt
 void timer1Isr(void)          // interrupt service routine that wraps a user defined function supplied by attachInterrupt
 {
   ms++;
@@ -73,12 +77,12 @@ void testMotor(void)
       if(c == 'f')
       {
         Serial.println("Motor FW");
-        myStepper.step(1);
+      myStepper.step(1);
       }
       else if(c == 'b')
       {
         Serial.println("Motor BW");
-        myStepper.step(-1);
+      myStepper.step(-1);
       }
     }
   }
@@ -87,15 +91,15 @@ void testMotor(void)
 void motorRotate(void)
 {
   unsigned char i;
-  for(i=0;i<30;i++)
+  for(i=0;i<5  ;i++)
   {
-  myStepper.step(1);
-  delay(3000);
+  myStepper.step(5);
+  delay(2000);
   }
-    for(i=0;i<30;i++)
+    for(i=0;i<5;i++)
   {
-  myStepper.step(-1);
-  delay(3000);
+  myStepper.step(-5);
+  delay(2000);
   }
 }
 
@@ -107,13 +111,11 @@ void setup(void)
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
   
-  // Motor Enables
-  pinMode(STEPPER_EN1,OUTPUT);
-  pinMode(STEPPER_EN2,OUTPUT);
+  pinMode(EN1,OUTPUT);
+  pinMode(EN2,OUTPUT);
   
-  // Enable Motor
-  digitalWrite(STEPPER_EN1,HIGH);
-  digitalWrite(STEPPER_EN2,HIGH);
+  digitalWrite(EN1,HIGH);
+    digitalWrite(EN2,HIGH);
   
   // UART Initialization
   Serial.begin(BAUD);
@@ -125,56 +127,102 @@ void setup(void)
   Wire.begin();
   // RTC DS1307 Initialization
   rtc.begin();
- 
+  
+   if (! rtc.isrunning()) {
+	   Serial.println("RTC is NOT running!");
+	   // following line sets the RTC to the date & time this sketch was compiled
+	   rtc.adjust(DateTime(__DATE__, __TIME__));
+   }
+  
   // Adjust Date and time
   #ifdef ADJUST_RTC
-  rtc.adjust(DateTime(__DATE__, __TIME__));
+  rtc.adjust(DateTime(DATE, TIME));
   #endif
   
   // Initiate LCD cursor
   lcd.setCursor(0,0);
   
   // Stepper Motor speed settings
-  myStepper.setSpeed(STEPPER_SPEED_RPM);
+  myStepper.setSpeed(60);
    
   // Timer 1 Initialization
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
+  
+  pinMode(STEPPER_EN1,OUTPUT);
+  pinMode(STEPPER_EN2,OUTPUT);
+  
+  digitalWrite(STEPPER_EN1,HIGH);
+  digitalWrite(STEPPER_EN2,HIGH);
 }
 
 void loop(void)
 {
-float        _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-float        LDR1,LDR2;
-float        LDR;
-int          current;
-unsigned int Voltage;
-int          Status;
-int          mm;
-int          hh;
-int          MM;
-int          HH;
+float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
+float LDR1,LDR2;
+float LDR;
+int current;
+unsigned char Voltage;
+int   Status;
+int   mm;
+int   hh;
+int   MM;
+int   HH;
 
+unsigned char dummy;
 
+ DateTime now = rtc.now();
+// while(1)
+
+//motorRotate();
 //testMotor();
 
-/*while(1)
-motorRotate();*/
+_temp   = mySensors.getTemp(DEGC);
+//myModem.sendSms(DAQ_SERVER_NO,"test");
+/*  Serial.print("AT+CMGS=\"");
+  Serial.print(DAQ_SERVER_NO);
+  Serial.write('"');
+  Serial.println();
+  delay(1000);
+  Serial.print("VOL: ");
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.print("CUR: ");
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print("POW: ");
+  Serial.print(current*Voltage);
+  Serial.write(',');
+  Serial.print("TMP: ");
+  Serial.print(_temp);
+  Serial.write(',');
+  Serial.print("HUM: ");
+  Serial.print(_humi);
+  Serial.write(',');
+  Serial.print("LD1: ");
+  Serial.print(_ldr1);
+  Serial.write(',');
+  Serial.print("LD2: ");
+  Serial.print(_ldr2);
+  Serial.write(',');  
+  Serial.print("LD3: ");
+  Serial.print(_ldr3);
+  Serial.write(','); 
+  Serial.print("LD4: ");
+  Serial.print(_ldr4); 
+  Serial.write(0x1A);*/
+
 
 // Calculate next predicted interval for data logging
-DateTime now = rtc.now();
 MM = now.minute();
 HH = now.hour();
-// logic issue
 if(MM > 44)
 {
-	///////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////
-	mm = 60 - MM;//DATA_LOG_SMS_INTERVAL;//(60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
 	if(HH == 23)
 	hh = 0;
 	else
-	hh = HH + 1;
+	hh = HH;
 }
 else
 {
@@ -189,10 +237,10 @@ bootTest();
 
 
 
-// Infinite loop (It will run continuously)
+// Infinite loop (It will run continuosly)
 while(1)
 {
-// Read All the data
+// Read All the datas
 _humi   = mySensors.getHumi();
 _temp   = mySensors.getTemp(DEGC);
 _ldr1   = mySensors.getLight(1);
@@ -445,12 +493,10 @@ if(MM == mm && HH == hh)
   Serial.write(','); 
   Serial.print("LD4: ");
   Serial.print(_ldr4); 
-  // After sms append 0x1A (Substitute in ASCII)
   Serial.write(0x1A);
   
   lcd.setCursor(0,1);
   lcd.print(LCDMSG9);
-  
   #elif DATA_LOG_MODE == 1
   // Send to User mobile
   Serial.print("AT+CMGS=\"");
@@ -560,7 +606,7 @@ if(MM == mm && HH == hh)
   
   // Through an error
   #else
-  #error "Invalid 'DATA_LOG_MODE' macro"
+  #error "Inavlid 'DATA_LOG_MODE' macro"
   #endif	
   
   #endif
@@ -593,26 +639,32 @@ LDR = LDR1 - LDR2;
 
 if(LDR > LDR_THRESHOLD1)
 {
-	    myStepper.step(-1);
+	myStepper.step(-1);
         delay(STEP_DELAY__);
         angle--;
 }
 else if(LDR < LDR_THRESHOLD2)
 {
-	    myStepper.step(1);
+	myStepper.step(1);
         delay(STEP_DELAY__);
         angle++;
 }
 
+
+
+
 #ifdef NIGHT_SAVE_MODE
 // Stepper Off Time
-if(HH >= STEPEER_OFF_TIME)
+if(now.hour() >= STEPEER_OFF_TIME)
 {
 StepperStatus = false;
 disableMotor();
+#ifdef DEBUG
+Serial.println("Night mode is ON");
+#endif
 }
 // Stepper On Time
-else if(HH >= STEPPER_ON_TIME && HH < STEPEER_OFF_TIME)
+else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)
 {
 StepperStatus = true;
 enableMotor();
@@ -621,6 +673,9 @@ enableMotor();
 
 // For debugging
 #ifdef DEBUG
+lcd.setCursor(0,0);
+lcd.print(LDR);
+lcd.print("    ");
 Serial.print(_humi);
 Serial.write(0x09);
 Serial.print(_temp);
@@ -713,7 +768,7 @@ void bootTest(void)
   Timer1.detachInterrupt();       // stop timer interrupt
   Timer1.stop();
   // Infinite loop
-  while(1)
+  while(true)
   {
     ;
   } 

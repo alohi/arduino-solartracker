@@ -74,13 +74,13 @@ return 0;
 void gsmModem::sendSms(char *No,char *Msg)
 {
   Serial.println(gsmSendSmsCmd1);
-  delay(5);
+  delay(50);
   Serial.print(gsmSendSmsCmd2);
   Serial.write('"');
   Serial.print(No);
   Serial.write('"');
   Serial.println();
-  delay(5);
+  delay(100);
   Serial.println(Msg);
   delay(5);
   Serial.write(ASCII_SUB);

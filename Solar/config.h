@@ -43,7 +43,9 @@
 #define EN2  8
 
 // Define Mobile Number
-#define DAQ_SERVER_NO "9342833087"
+#define DAQ_SERVER_NO "9980524441"
+
+
 #define USER_NO       "9342833087"
 
 #define STEP_DELAY__   3000
@@ -83,7 +85,7 @@
 #define STEPPER_ON_TIME  6
 
 // Stepper Motor Speed in RPM
-#define STEPPER_SPEED_RPM 60
+#define STEPPER_SPEED_RPM 20                                
 #define STEPER_STEPS      200
 #define STEPPER_STEPS     200
 

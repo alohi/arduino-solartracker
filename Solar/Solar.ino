@@ -220,6 +220,7 @@ now = rtc.now();
 MM = now.minute();
 HH = now.hour();
 
+#ifdef SENSOR_ALERT
 // Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
 {
@@ -239,7 +240,6 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   
-  #ifdef SENSOR_ALERT
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
@@ -420,6 +420,12 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
 // Data Logging Condition
 if(MM == mm && HH == hh)
 {
+  // In night save mode data logging is not required (Enhancement feature)
+  #ifdef NIGHT_SAVE_MODE
+  if(StepperStatus == true)
+  {
+  #endif
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG7);
@@ -568,14 +574,12 @@ if(MM == mm && HH == hh)
   lcd.setCursor(0,1);
   lcd.print(LCDMSG10);
   
-  // Through an error
+ // Through an error
   #else
   #error "Inavlid 'DATA_LOG_MODE' macro"
-  #endif	
-  
   #endif
   
-// Calculating next interval
+  // Calculating next interval
 MM = now.minute();
 HH = now.hour();
 if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
@@ -591,8 +595,15 @@ else
 	mm = MM + DATA_LOG_SMS_INTERVAL;
 	hh = HH;
 }
-}
+  
 
+#ifdef NIGHT_SAVE_MODE
+}
+#endif	
+}
+#endif
+
+  
 // Solar panel rotation logic
 // Add Logic here
 ///////////////////////////////////////////////
@@ -626,6 +637,9 @@ disableMotor();
 #ifdef DEBUG
 Serial.println("Night mode is ON");
 #endif
+/////////////////////////////////
+/////////////////////////////////
+// ADD LCD Display
 }
 // Stepper On Time
 else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)

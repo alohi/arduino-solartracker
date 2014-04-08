@@ -177,52 +177,16 @@ unsigned char dummy;
 //motorRotate();
 //testMotor();
 
-_temp   = mySensors.getTemp(DEGC);
-//myModem.sendSms(DAQ_SERVER_NO,"test");
-/*  Serial.print("AT+CMGS=\"");
-  Serial.print(DAQ_SERVER_NO);
-  Serial.write('"');
-  Serial.println();
-  delay(1000);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("POW: ");
-  Serial.print(current*Voltage);
-  Serial.write(',');
-  Serial.print("TMP: ");
-  Serial.print(_temp);
-  Serial.write(',');
-  Serial.print("HUM: ");
-  Serial.print(_humi);
-  Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
-  Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
-  Serial.write(0x1A);*/
-
-
 // Calculate next predicted interval for data logging
 MM = now.minute();
 HH = now.hour();
-if(MM > 44)
+if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
 	hh = 0;
 	else
-	hh = HH;
+	hh = HH + 1;
 }
 else
 {
@@ -614,13 +578,13 @@ if(MM == mm && HH == hh)
 // Calculating next interval
 MM = now.minute();
 HH = now.hour();
-if(MM > 44)
+if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
 	hh = 0;
 	else
-	hh = HH;
+	hh = HH + 1;
 }
 else
 {

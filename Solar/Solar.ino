@@ -18,7 +18,7 @@ volatile unsigned int ss = 0;
 unsigned int angle = 0;
 boolean motorStatus = false;
 boolean StepperStatus = true;
-
+boolean lcdUpdateFlag = false;
 
 #define ADJUST_RTC
 
@@ -172,57 +172,21 @@ int   HH;
 unsigned char dummy;
 
  DateTime now = rtc.now();
-// while(1)
+ //while(1)
 
 //motorRotate();
 //testMotor();
 
-_temp   = mySensors.getTemp(DEGC);
-//myModem.sendSms(DAQ_SERVER_NO,"test");
-/*  Serial.print("AT+CMGS=\"");
-  Serial.print(DAQ_SERVER_NO);
-  Serial.write('"');
-  Serial.println();
-  delay(1000);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("POW: ");
-  Serial.print(current*Voltage);
-  Serial.write(',');
-  Serial.print("TMP: ");
-  Serial.print(_temp);
-  Serial.write(',');
-  Serial.print("HUM: ");
-  Serial.print(_humi);
-  Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
-  Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
-  Serial.write(0x1A);*/
-
-
 // Calculate next predicted interval for data logging
 MM = now.minute();
 HH = now.hour();
-if(MM > 44)
+if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
 	hh = 0;
 	else
-	hh = HH;
+	hh = HH+1;
 }
 else
 {
@@ -234,12 +198,21 @@ else
 #ifndef DEBUG
 bootTest();
 #endif
-
-
+lcdUpdateFlag = true;
 
 // Infinite loop (It will run continuosly)
 while(1)
 {
+	if(lcdUpdateFlag == true)
+	{
+lcd.setCursor(0,0);
+lcd.print(LCDMSG12);
+lcd.setCursor(0,1);
+lcd.print(LCDMSG13);		
+lcdUpdateFlag = false;
+	}
+
+
 // Read All the datas
 _humi   = mySensors.getHumi();
 _temp   = mySensors.getTemp(DEGC);
@@ -256,6 +229,7 @@ now = rtc.now();
 MM = now.minute();
 HH = now.hour();
 
+  #ifdef SENSOR_ALERT
 // Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
 {
@@ -275,7 +249,6 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   
-  #ifdef SENSOR_ALERT
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
@@ -443,7 +416,7 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   
    // Put Invalid entry value for status
    Status = 10;
-  
+  lcdUpdateFlag = true;
    // Through an error      
    #else
    #error "Invalid 'ALERT_TYPE' macro"  
@@ -467,69 +440,47 @@ if(MM == mm && HH == hh)
   Serial.write('"');
   Serial.println();
   delay(100);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("POW: ");
-  Serial.print(current*Voltage);
-  Serial.write(',');
-  Serial.print("TMP: ");
+  /*Serial.print(now.DateTime());
+  Serial.write(',');*/
   Serial.print(_temp);
   Serial.write(',');
-  Serial.print("HUM: ");
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
+  Serial.print(LDR1);
   Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
+  Serial.print(LDR2);
+  Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(Voltage);
+  Serial.write(',');
   Serial.write(0x1A);
   
   lcd.setCursor(0,1);
   lcd.print(LCDMSG9);
-  #elif DATA_LOG_MODE == 1
+  
+    #elif DATA_LOG_MODE == 1
   // Send to User mobile
   Serial.print("AT+CMGS=\"");
   Serial.print(USER_NO);
   Serial.write('"');
   Serial.println();
   delay(100);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("POW: ");
-  Serial.print(current*Voltage);
-  Serial.write(',');
-  Serial.print("TMP: ");
+  /*Serial.print(now.DateTime());
+  Serial.write(',');*/
   Serial.print(_temp);
   Serial.write(',');
-  Serial.print("HUM: ");
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
+  Serial.print(LDR1);
   Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
+  Serial.print(LDR2);
+  Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.write(0x1A);
   Serial.write(0x1A);  
   
   lcd.setCursor(0,1);
@@ -543,32 +494,20 @@ if(MM == mm && HH == hh)
   Serial.write('"');
   Serial.println();
   delay(100);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("POW: ");
-  Serial.print(current*Voltage);
-  Serial.write(',');
-  Serial.print("TMP: ");
+ /* Serial.print(now.DateTime());
+  Serial.write(',');*/
   Serial.print(_temp);
   Serial.write(',');
-  Serial.print("HUM: ");
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
+  Serial.print(LDR1);
   Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
+  Serial.print(LDR2);
+  Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(Voltage);
+  Serial.write(',');
   Serial.write(0x1A);
 
   Serial.print("AT+CMGS=\"");
@@ -576,51 +515,44 @@ if(MM == mm && HH == hh)
   Serial.write('"');
   Serial.println();
   delay(100);
-  Serial.print("VOL: ");
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.print("CUR: ");
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print("TMP: ");
+ /* Serial.print(now.DateTime());
+  Serial.write(',');*/
   Serial.print(_temp);
   Serial.write(',');
-  Serial.print("HUM: ");
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print("LD1: ");
-  Serial.print(_ldr1);
+  Serial.print(LDR1);
   Serial.write(',');
-  Serial.print("LD2: ");
-  Serial.print(_ldr2);
-  Serial.write(',');  
-  Serial.print("LD3: ");
-  Serial.print(_ldr3);
-  Serial.write(','); 
-  Serial.print("LD4: ");
-  Serial.print(_ldr4); 
-  Serial.write(0x1A);  
+  Serial.print(LDR2);
+  Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(Voltage);
+  Serial.write(',');
+  Serial.write(0x1A);
   
   lcd.setCursor(0,1);
   lcd.print(LCDMSG10);
   
+  lcdUpdateFlag = true;
+  
   // Through an error
   #else
-  #error "Inavlid 'DATA_LOG_MODE' macro"
+  #error "Invalid 'DATA_LOG_MODE' macro"
   #endif	
   
-  #endif
+
   
 // Calculating next interval
 MM = now.minute();
 HH = now.hour();
-if(MM > 44)
+if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (60 - MM) + (DATA_LOG_SMS_INTERVAL - (60 - MM));
+	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
 	hh = 0;
 	else
-	hh = HH;
+	hh = HH+1;
 }
 else
 {
@@ -628,6 +560,7 @@ else
 	hh = HH;
 }
 }
+  #endif
 
 // Solar panel rotation logic
 // Add Logic here
@@ -662,6 +595,9 @@ disableMotor();
 #ifdef DEBUG
 Serial.println("Night mode is ON");
 #endif
+lcd.setCursor(0,1);
+lcd.print(LSDMSG11);
+lcdUpdateFlag = true;
 }
 // Stepper On Time
 else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)

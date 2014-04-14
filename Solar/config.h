@@ -30,20 +30,20 @@
 #define __config_h__
 
 // Build Configuration
-#define DEBUG
-//#define RELEASE
+//#define DEBUG
+#define RELEASE
 
 // Includes
 #include <Arduino.h>
 
 // Default Time in minutes for GSM Modem Data Logging
-#define DATA_LOG_SMS_INTERVAL 15
+#define DATA_LOG_SMS_INTERVAL 2
 
 #define EN1  7
 #define EN2  8
 
 // Define Mobile Number
-#define DAQ_SERVER_NO "9980524441"
+#define DAQ_SERVER_NO "9342833087"
 
 
 #define USER_NO       "9342833087"
@@ -128,7 +128,7 @@
 #define ALERT_TYPE        0
 //0 -> Call to user when system fails, 1 -> Send sms to user, 2 -> Send Sms to DAQ server, 3 -> Send sms to both user and DAQ server
 
-#define DATA_LOG_MODE     0
+#define DATA_LOG_MODE     1
 //0 -> Send Sms to DAQ server,  2 -> Send sms to user, 3 -> Send sms to both user and DAQ server
 
 extern volatile unsigned int ss;
@@ -142,12 +142,12 @@ extern volatile unsigned int ss;
 #define SOLAR_MUL_FACTOR 4
 
 //#define NIGHT_SAVE_MODE 
-//#define SENSOR_ALERT
-//#define DATA_LOGGING
+#define SENSOR_ALERT
+#define DATA_LOGGING
 
 // Upper and lower limits
-#define HUMID_UPPER_LIMIT      70
-#define HUMID_LOWER_LIMIT      20
+#define HUMID_UPPER_LIMIT      100
+#define HUMID_LOWER_LIMIT      10
 #define TEMPR_UPPER_LIMIT      100
 #define TEMPR_LOWER_LIMIT      10
 

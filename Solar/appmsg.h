@@ -51,6 +51,9 @@
 #define LCDMSG8  "DATA TO USR       "
 #define LCDMSG9  "DATA TO DAQ       "
 #define LCDMSG10 "DATA TO BOTH      "
+#define LSDMSG11 "NIGHT MODE        "
+#define LCDMSG12 "SOLAR TRACKER     "
+#define LCDMSG13 "RUNNING..........."
 
 #define START_UP_ALERT_SMS "Device Started"
 

@@ -141,8 +141,13 @@ extern volatile unsigned int ss;
 // Voltage Mul factor
 #define SOLAR_MUL_FACTOR 4
 
+<<<<<<< HEAD
 //#define NIGHT_SAVE_MODE 
 #define SENSOR_ALERT
+=======
+#define NIGHT_SAVE_MODE 
+//#define SENSOR_ALERT
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 #define DATA_LOGGING
 
 // Upper and lower limits

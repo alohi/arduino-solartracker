@@ -186,7 +186,11 @@ if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 	if(HH == 23)
 	hh = 0;
 	else
+<<<<<<< HEAD
 	hh = HH+1;
+=======
+	hh = HH + 1;
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 }
 else
 {
@@ -229,7 +233,11 @@ now = rtc.now();
 MM = now.minute();
 HH = now.hour();
 
+<<<<<<< HEAD
   #ifdef SENSOR_ALERT
+=======
+#ifdef SENSOR_ALERT
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 // Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
 {
@@ -429,6 +437,12 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
 // Data Logging Condition
 if(MM == mm && HH == hh)
 {
+  // In night save mode data logging is not required (Enhancement feature)
+  #ifdef NIGHT_SAVE_MODE
+  if(StepperStatus == true)
+  {
+  #endif
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG7);
@@ -534,6 +548,7 @@ if(MM == mm && HH == hh)
   lcd.setCursor(0,1);
   lcd.print(LCDMSG10);
   
+<<<<<<< HEAD
   lcdUpdateFlag = true;
   
   // Through an error
@@ -542,8 +557,14 @@ if(MM == mm && HH == hh)
   #endif	
   
 
+=======
+ // Through an error
+  #else
+  #error "Inavlid 'DATA_LOG_MODE' macro"
+  #endif
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
   
-// Calculating next interval
+  // Calculating next interval
 MM = now.minute();
 HH = now.hour();
 if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
@@ -552,16 +573,30 @@ if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
 	if(HH == 23)
 	hh = 0;
 	else
+<<<<<<< HEAD
 	hh = HH+1;
+=======
+	hh = HH + 1;
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 }
 else
 {
 	mm = MM + DATA_LOG_SMS_INTERVAL;
 	hh = HH;
 }
-}
-  #endif
+  
 
+#ifdef NIGHT_SAVE_MODE
+}
+#endif	
+}
+<<<<<<< HEAD
+  #endif
+=======
+#endif
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
+
+  
 // Solar panel rotation logic
 // Add Logic here
 ///////////////////////////////////////////////
@@ -595,9 +630,15 @@ disableMotor();
 #ifdef DEBUG
 Serial.println("Night mode is ON");
 #endif
+<<<<<<< HEAD
 lcd.setCursor(0,1);
 lcd.print(LSDMSG11);
 lcdUpdateFlag = true;
+=======
+/////////////////////////////////
+/////////////////////////////////
+// ADD LCD Display
+>>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 }
 // Stepper On Time
 else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)

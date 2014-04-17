@@ -38,7 +38,7 @@ unsigned char gsmModem::detectModem(void)
 {
 unsigned char i;
 volatile char tempBuf[10];
-ss = 0;
+Tss = 0;
 Serial.println(GsmTestCmd);
 for(i=0;i<=GsmAckLength;i++)
 {
@@ -47,7 +47,7 @@ for(i=0;i<=GsmAckLength;i++)
   {
   tempBuf[i] = Serial.read();
   }
-  else if(ss == GSM_DETECT_TIMEOUT)
+  else if(Tss == GSM_DETECT_TIMEOUT)
   {
   return 0;
   }

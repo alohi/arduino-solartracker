@@ -12,28 +12,51 @@
 
 
 // Globals for Timer Calculation
-volatile unsigned int ms = 0;
-volatile unsigned int ss = 0;
+volatile unsigned int Tms = 0;
+volatile unsigned int Tss = 0;
 
 unsigned int angle = 0;
-boolean motorStatus = false;
-boolean StepperStatus = true;
-boolean lcdUpdateFlag = false;
+boolean RunningMode = true; // true -> Day Mode , false -> Night Mode
+boolean displayClearFlag = false;
+unsigned char rtcstringlen = 0;
 
+boolean stepperRunReq = false;
+
+unsigned char rtcDisplayVal = 0;
+/* 0 -> Date 
+   1 -> Day Of Week
+   2 -> Time
+*/
+
+unsigned char DisplayVal = 0;
+/*
+0 -> Temperature
+1 -> Humidity
+2 -> LDR Difference
+3 -> Voltage
+4 -> Current
+5 -> Power
+6 -> Running Mode (Night or Day)
+7 -> Next Data Log Interval
+*/
+
+// Uncomment Below line once to set RTC time
+// Note : Initially you have to uncomment and burn the program, then comment and reburn program
 #define ADJUST_RTC
 
 #ifdef ADJUST_RTC
-#define DATE "Feb 03 2014"
-#define TIME "22:08:00"
+#define _DATE "Apr 17 2014"
+#define _TIME "19:23:00"
 #endif
 
+// Timer ISR
 void timer1Isr(void)          // interrupt service routine that wraps a user defined function supplied by attachInterrupt
 {
-  ms++;
-  if(ms >= 1000)
+  Tms++;
+  if(Tms >= 1000)
   {
-    ms = 0;
-    ss++;
+    Tms = 0;
+    Tss++;
   }
 }
 
@@ -49,60 +72,29 @@ Stepper myStepper(STEPPER_STEPS,STEPPER_INA_1,STEPPER_INA_2,STEPPER_INB_1,STEPPE
 RTC_DS1307 rtc;
 
 
-void _test_sensors(void)
-{
-	
-}
 
+// Enable Motor
 void enableMotor(void)
 {
+		#ifdef FORCE_DISABLE_MOTOR
+		  digitalWrite(STEPPER_EN1,LOW);
+		  digitalWrite(STEPPER_EN2,LOW);
+		  return;
+		#endif
   digitalWrite(STEPPER_EN1,HIGH);
   digitalWrite(STEPPER_EN2,HIGH);
 }
 
+// Disable Motor
 void disableMotor(void)
 {
   digitalWrite(STEPPER_EN1,LOW);
   digitalWrite(STEPPER_EN2,LOW);
 }
 
-void testMotor(void)
-{
-  char c;
-  while(1)
-  {
-    if(Serial.available())
-    {
-      c = Serial.read();
-      if(c == 'f')
-      {
-        Serial.println("Motor FW");
-      myStepper.step(1);
-      }
-      else if(c == 'b')
-      {
-        Serial.println("Motor BW");
-      myStepper.step(-1);
-      }
-    }
-  }
-}
 
-void motorRotate(void)
-{
-  unsigned char i;
-  for(i=0;i<5  ;i++)
-  {
-  myStepper.step(5);
-  delay(2000);
-  }
-    for(i=0;i<5;i++)
-  {
-  myStepper.step(-5);
-  delay(2000);
-  }
-}
 
+// Setup executes once on start up
 void setup(void)
 { 
   // LDR Pin Configuration
@@ -111,11 +103,13 @@ void setup(void)
   pinMode(LDR3,INPUT);
   pinMode(LDR4,INPUT);
   
+  // Set Port Directions
   pinMode(EN1,OUTPUT);
   pinMode(EN2,OUTPUT);
   
-  digitalWrite(EN1,HIGH);
-    digitalWrite(EN2,HIGH);
+  // Disable Motor
+  digitalWrite(EN1,LOW);
+  digitalWrite(EN2,LOW);
   
   // UART Initialization
   Serial.begin(BAUD);
@@ -128,15 +122,21 @@ void setup(void)
   // RTC DS1307 Initialization
   rtc.begin();
   
-   if (! rtc.isrunning()) {
+   if (! rtc.isrunning()) 
+   {
+	   #ifdef DEBUG
 	   Serial.println("RTC is NOT running!");
-	   // following line sets the RTC to the date & time this sketch was compiled
-	   rtc.adjust(DateTime(__DATE__, __TIME__));
+	   #endif
    }
-  
+   else
+
+   #ifdef DEBUG
+   Serial.println("RTC is running");
+  #endif
   // Adjust Date and time
   #ifdef ADJUST_RTC
-  rtc.adjust(DateTime(DATE, TIME));
+  //"Apr 17 2014", time = "19:19:00"
+  rtc.adjust(DateTime(_DATE,_TIME));
   #endif
   
   // Initiate LCD cursor
@@ -148,74 +148,107 @@ void setup(void)
   // Timer 1 Initialization
   Timer1.initialize(Timeus);
   Timer1.attachInterrupt(timer1Isr);
-  
-  pinMode(STEPPER_EN1,OUTPUT);
-  pinMode(STEPPER_EN2,OUTPUT);
-  
-  digitalWrite(STEPPER_EN1,HIGH);
-  digitalWrite(STEPPER_EN2,HIGH);
 }
 
 void loop(void)
 {
+	
+// Sensor Values
 float _humi,_ldr1,_ldr2,_ldr3,_ldr4,_temp;
-float LDR1,LDR2;
-float LDR;
-int current;
-unsigned char Voltage;
-int   Status;
-int   mm;
-int   hh;
-int   MM;
-int   HH;
+// LDR Average (1 - 2, 3 - 4)
+float _LDR1,_LDR2;
+// LDR Difference (LDR2 - LDR1)
+float _LDR;
+// Solar Current (mA)
+int   current;
+// Solar Voltage (mV)
+int   Voltage;
+// Alert Status
+unsigned char Status;
 
-unsigned char dummy;
+// Global DateTime
+unsigned char MM;  // Month (1 - 12)
+unsigned char DD;  // Date
+unsigned int  YY;  // Year
+unsigned char DOF; // Day Of Week (1-7)
+unsigned char HH;  // Hour
+unsigned char MINU;  // Minute
+unsigned char SS;  // Second
 
- DateTime now = rtc.now();
- //while(1)
+// Local DateTime
+unsigned char mm;  // Month (1 - 12)
+unsigned char dd;  // Date 
+unsigned int  yy;  // Year 
+unsigned char dof; // Day Of Week (1-7)
+unsigned char hh;  // Hour
+unsigned char minu;  // Minute
+unsigned char ss;  // Second
 
-//motorRotate();
-//testMotor();
+// hour and minute for data logging
+unsigned char dataLogHH;
+unsigned char dataLogMM;
+
+// LCD Update Time Value
+unsigned char lSS;
+
+// Seconds counter for stepper motor rotation
+unsigned char stepperStopWatch = 0;
+
+
+DateTime now = rtc.now();
+
+// Store Global DateTime
+MM  = now.month();         // Month
+DD  = now.day();           // Day
+YY  = now.year();          // Year
+DOF = now.dayOfWeek();     // Day Of Week
+HH  = now.hour();          // Hour
+MINU  = now.minute();        // Minute
+SS  = now.second();        // Second
+
+
+// Generate warnings
+#ifndef NIGHT_SAVE_MODE
+#warning "Night Save mode is disabled"
+#endif
+#ifndef SENSOR_ALERT
+#warning "Sensor alert is disabled"
+#endif
+
+#ifndef DATA_LOGGING
+#warning "Data Logging is disabled"
+#endif
 
 // Calculate next predicted interval for data logging
-MM = now.minute();
-HH = now.hour();
-if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
+#ifndef DATA_LOGGING
+if(MINU >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
+	dataLogMM = (MINU + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
-	hh = 0;
+	dataLogHH = 0;
 	else
-<<<<<<< HEAD
-	hh = HH+1;
-=======
-	hh = HH + 1;
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
+	dataLogHH = HH+1;
 }
 else
 {
-	mm = MM + DATA_LOG_SMS_INTERVAL;
-	hh = HH;
+	dataLogMM = MINU + DATA_LOG_SMS_INTERVAL;
+	dataLogHH = HH;
 }
+#endif
 
-
+// Boottest will not enabled if DEBUG macro is defined
 #ifndef DEBUG
 bootTest();
 #endif
-lcdUpdateFlag = true;
+
+Timer1.detachInterrupt();
+Timer1.stop();
+
+enableMotor();
 
 // Infinite loop (It will run continuosly)
 while(1)
 {
-	if(lcdUpdateFlag == true)
-	{
-lcd.setCursor(0,0);
-lcd.print(LCDMSG12);
-lcd.setCursor(0,1);
-lcd.print(LCDMSG13);		
-lcdUpdateFlag = false;
-	}
-
 
 // Read All the datas
 _humi   = mySensors.getHumi();
@@ -227,36 +260,82 @@ _ldr4   = mySensors.getLight(4);
 current = mySensors.getCurrent();
 Voltage = mySensors.getVoltage();
 
-// GET RTC Date and time
 DateTime now = rtc.now();
-now = rtc.now();
-MM = now.minute();
-HH = now.hour();
 
-<<<<<<< HEAD
-  #ifdef SENSOR_ALERT
-=======
+// GET RTC Date and time
+mm  = now.month();         // Month
+dd  = now.day();           // Day
+yy  = now.year();          // Year
+dof = now.dayOfWeek();     // Day Of Week
+hh  = now.hour();          // Hour
+minu  = now.minute();        // Minute
+ss  = now.second();        // Second
+
+// Read LDR
+_LDR1 = (_ldr2 + _ldr1) / 2;
+_LDR2 = (_ldr4 + _ldr3) / 2;
+// Calculate Difference
+_LDR = _LDR1 - _LDR2;
+
+lSS = ss;
+
+if(hh < 10)
+{
+	if(minu < 10)
+	rtcstringlen = 0;
+	else
+	rtcstringlen = 1;
+}
+else
+{
+		if(minu < 10)
+		rtcstringlen = 1;
+		else
+		rtcstringlen = 2;
+}
+
+
+/*
+lcd.setCursor(0,0);
+lcd.print(Tss);*/
+//lcd.clear();
+
+
+// Night Mode or Day Mode
+#ifdef NIGHT_SAVE_MODE
+// Stepper Off Time ( Night Mode)
+if(hh >= STEPEER_OFF_TIME_HH && minu >= STEPEER_OFF_TIME_MM)
+{
+	RunningMode = false;
+}
+// Stepper On Time (Day Mode)
+else if(hh >= STEPPER_ON_TIME_HH && minu >= STEPEER_ON_TIME_MM)
+{
+	RunningMode = true;
+	enableMotor();
+}
+#endif
+
+// Sensor Alert condition is enabled if SENSOR_ALERT macro is enabled in config.h
 #ifdef SENSOR_ALERT
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
-// Alert Condition
 if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER_LIMIT || _temp < TEMPR_LOWER_LIMIT)
 {
   #if ALERT_TYPE == 0
   myModem.connectCall(USER_NO);
-  ////////////////// Display LCD
-  ////////////////// Add here
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   lcd.setCursor(0,1);
-  lcd.print(LCDMSG2);
-  
+  lcd.print(LCDMSG2); 
   #elif ALERT_TYPE == 1 || ALERT_TYPE == 2 || ALERT_TYPE == 3
-  
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG1);
   
+  #else
+  #error "Invalid Alert Type"
+  #endif
+ 
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
@@ -281,139 +360,93 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
    if(Status == 0)
    {
              #if ALERT_TYPE == 1
-             ////////////////// Display LCD
-             ////////////////// Add here
              myModem.sendSms(USER_NO,USERMSG1);
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG4);
              #elif ALERT_TYPE == 2
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG5);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #elif ALERT_TYPE == 3
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG1);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #endif
    }
    else if(Status == 1)
    {
              #if ALERT_TYPE == 1
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG2);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #elif ALERT_TYPE == 2
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG5);             
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #elif ALERT_TYPE == 3
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG2);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG2);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #endif
    }
     else if(Status == 2)
     {
              #if   ALERT_TYPE == 1
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG3);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #elif ALERT_TYPE == 2
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG5);   
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
-             ////////////////// Display LCD
-             ////////////////// Add here 
              #elif ALERT_TYPE == 3
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG1);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG3);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #endif
     }
     else if(Status == 3)
         {
              #if   ALERT_TYPE == 1
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG4);
              myModem.sendSms(USER_NO,USERMSG4);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #elif ALERT_TYPE == 2
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG5); 
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
              #elif ALERT_TYPE == 3
-             ////////////////// Display LCD
-             ////////////////// Add here
              lcd.setCursor(0,1);
              lcd.print(LCDCLR);
              lcd.setCursor(0,1);
              lcd.print(LCDMSG6);
              myModem.sendSms(USER_NO,USERMSG4);
              myModem.sendSms(DAQ_SERVER_NO,USERMSG4);
-             ////////////////// Display LCD
-             ////////////////// Add here
              #endif
         }
     else
@@ -423,133 +456,192 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
     }
   
    // Put Invalid entry value for status
-   Status = 10;
-  lcdUpdateFlag = true;
-   // Through an error      
-   #else
-   #error "Invalid 'ALERT_TYPE' macro"  
+   Status = 10;  
    
-   #endif
+   // Update Flag (So for next cycle lcd will be cleared)
+   displayClearFlag = true;
 }
 #endif
 
 #ifdef DATA_LOGGING
 // Data Logging Condition
-if(MM == mm && HH == hh)
+if(minu == dataLogMM && hh == dataLogHH)
 {
-  // In night save mode data logging is not required (Enhancement feature)
-  #ifdef NIGHT_SAVE_MODE
-  if(StepperStatus == true)
-  {
-  #endif
-
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(LCDMSG7);
   
   #if DATA_LOG_MODE == 0
+  
+  // Display LCD
+  lcd.setCursor(0,1);
+  lcd.print(LCDMSG9);
+  
   // Send Data to DAQ_NO
   Serial.print("AT+CMGS=\"");
   Serial.print(DAQ_SERVER_NO);
   Serial.write('"');
   Serial.println();
-  delay(100);
-  /*Serial.print(now.DateTime());
-  Serial.write(',');*/
+  delay(SMS_NO_TEXT_DELAY);
+
+  // Send Current DateTime
+  Serial.print(mm);   // Month
+  Serial.write('\\');
+  Serial.print(dd);   // Date
+  Serial.write('\\');
+  Serial.print(yy);   // Year
+  Serial.write(' ');
+  Serial.print(dof);  // Day Of Week
+  Serial.write(' ');
+  Serial.print(hh);   // Hour
+  Serial.write(':');
+  Serial.print(minu); // Minute
+  Serial.write(':');
+  Serial.print(ss);   // Second
+
+// Send Sensor Data
   Serial.print(_temp);
   Serial.write(',');
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print(LDR1);
+  Serial.print(_LDR1);
   Serial.write(',');
-  Serial.print(LDR2);
-  Serial.write(',');
-  Serial.print(current);
+  Serial.print(_LDR2);
   Serial.write(',');
   Serial.print(Voltage);
   Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(angle);
   Serial.write(0x1A);
+ 
   
-  lcd.setCursor(0,1);
-  lcd.print(LCDMSG9);
+  #elif DATA_LOG_MODE == 1
   
-    #elif DATA_LOG_MODE == 1
+  // Display LCD
+    lcd.setCursor(0,1);
+    lcd.print(LCDMSG8);
+  
   // Send to User mobile
   Serial.print("AT+CMGS=\"");
   Serial.print(USER_NO);
   Serial.write('"');
   Serial.println();
-  delay(100);
-  /*Serial.print(now.DateTime());
-  Serial.write(',');*/
+  delay(SMS_NO_TEXT_DELAY);
+
+  // Send Current DateTime
+  Serial.print(mm);   // Month
+  Serial.write('\\');
+  Serial.print(dd);   // Date
+  Serial.write('\\');
+  Serial.print(yy);   // Year
+  Serial.write(' ');
+  Serial.print(dof);  // Day Of Week
+  Serial.write(' ');
+  Serial.print(hh);   // Hour
+  Serial.write(':');
+  Serial.print(minu); // Minute
+  Serial.write(':');
+  Serial.print(ss);   // Second
+
+  // Send Sensor Data
   Serial.print(_temp);
   Serial.write(',');
   Serial.print(_humi);
   Serial.write(',');
-  Serial.print(LDR1);
+  Serial.print(_LDR1);
   Serial.write(',');
-  Serial.print(LDR2);
-  Serial.write(',');
-  Serial.print(current);
+  Serial.print(_LDR2);
   Serial.write(',');
   Serial.print(Voltage);
   Serial.write(',');
+  Serial.print(current);
+  Serial.write(',');
+  Serial.print(angle);
   Serial.write(0x1A);
-  Serial.write(0x1A);  
-  
-  lcd.setCursor(0,1);
-  lcd.print(LCDMSG8);
-  
   
   #elif DATA_LOG_MODE == 2
+  
+  // Display LCD
+    lcd.setCursor(0,1);
+    lcd.print(LCDMSG10);
+  
   // Send to both  
   Serial.print("AT+CMGS=\"");
   Serial.print(DAQ_SERVER_NO);
   Serial.write('"');
   Serial.println();
-  delay(100);
- /* Serial.print(now.DateTime());
-  Serial.write(',');*/
-  Serial.print(_temp);
-  Serial.write(',');
-  Serial.print(_humi);
-  Serial.write(',');
-  Serial.print(LDR1);
-  Serial.write(',');
-  Serial.print(LDR2);
-  Serial.write(',');
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.write(0x1A);
+  delay(SMS_NO_TEXT_DELAY);
+  
+   // Send Current DateTime
+   Serial.print(mm);   // Month
+   Serial.write('\\');
+   Serial.print(dd);   // Date
+   Serial.write('\\');
+   Serial.print(yy);   // Year
+   Serial.write(' ');
+   Serial.print(dof);  // Day Of Week
+   Serial.write(' ');
+   Serial.print(hh);   // Hour
+   Serial.write(':');
+   Serial.print(minu); // Minute
+   Serial.write(':');
+   Serial.print(ss);   // Second
 
-  Serial.print("AT+CMGS=\"");
-  Serial.print(USER_NO);
-  Serial.write('"');
-  Serial.println();
-  delay(100);
- /* Serial.print(now.DateTime());
-  Serial.write(',');*/
-  Serial.print(_temp);
-  Serial.write(',');
-  Serial.print(_humi);
-  Serial.write(',');
-  Serial.print(LDR1);
-  Serial.write(',');
-  Serial.print(LDR2);
-  Serial.write(',');
-  Serial.print(current);
-  Serial.write(',');
-  Serial.print(Voltage);
-  Serial.write(',');
-  Serial.write(0x1A);
+   // Send Sensor Data
+   Serial.print(_temp);
+   Serial.write(',');
+   Serial.print(_humi);
+   Serial.write(',');
+   Serial.print(_LDR1);
+   Serial.write(',');
+   Serial.print(_LDR2);
+   Serial.write(',');
+   Serial.print(Voltage);
+   Serial.write(',');
+   Serial.print(current);
+   Serial.write(',');
+   Serial.print(angle);
+   Serial.write(0x1A);
   
-  lcd.setCursor(0,1);
-  lcd.print(LCDMSG10);
-  
-<<<<<<< HEAD
-  lcdUpdateFlag = true;
+  delay(SMS_NO_TEXT_DELAY*2);
+
+     Serial.print("AT+CMGS=\"");
+     Serial.print(USER_NO);
+     Serial.write('"');
+     Serial.println();
+     delay(SMS_NO_TEXT_DELAY);
+
+    // Send Current DateTime
+    Serial.print(mm);   // Month
+    Serial.write('\\');
+    Serial.print(dd);   // Date
+    Serial.write('\\');
+    Serial.print(yy);   // Year
+    Serial.write(' ');
+    Serial.print(dof);  // Day Of Week
+    Serial.write(' ');
+    Serial.print(hh);   // Hour
+    Serial.write(':');
+    Serial.print(minu); // Minute
+    Serial.write(':');
+    Serial.print(ss);   // Second
+
+    // Send Sensor Data
+    Serial.print(_temp);
+    Serial.write(',');
+    Serial.print(_humi);
+    Serial.write(',');
+    Serial.print(_LDR1);
+    Serial.write(',');
+    Serial.print(_LDR2);
+    Serial.write(',');
+    Serial.print(Voltage);
+    Serial.write(',');
+    Serial.print(current);
+    Serial.write(',');
+    Serial.print(angle);
+    Serial.write(0x1A);
   
   // Through an error
   #else
@@ -557,123 +649,320 @@ if(MM == mm && HH == hh)
   #endif	
   
 
-=======
- // Through an error
-  #else
-  #error "Inavlid 'DATA_LOG_MODE' macro"
-  #endif
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
-  
-  // Calculating next interval
-MM = now.minute();
-HH = now.hour();
-if(MM >= (60 - DATA_LOG_SMS_INTERVAL))
+if(minu >= (60 - DATA_LOG_SMS_INTERVAL))
 {
-	mm = (MM + DATA_LOG_SMS_INTERVAL) - 60;
-	if(HH == 23)
-	hh = 0;
+	dataLogMM = (minu + DATA_LOG_SMS_INTERVAL) - 60;
+	if(hh == 23)
+	dataLogHH = 0;
 	else
-<<<<<<< HEAD
-	hh = HH+1;
-=======
-	hh = HH + 1;
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
+	dataLogHH = hh + 1;
 }
 else
 {
-	mm = MM + DATA_LOG_SMS_INTERVAL;
-	hh = HH;
+	dataLogMM = mm + DATA_LOG_SMS_INTERVAL;
+	dataLogHH = hh;
 }
-  
+}
 
-#ifdef NIGHT_SAVE_MODE
-}
-#endif	
-}
-<<<<<<< HEAD
-  #endif
-=======
+   // Update Flag (So for next cycle lcd will be cleared)
+   displayClearFlag = true;
 #endif
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
 
-  
-// Solar panel rotation logic
-// Add Logic here
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-LDR1 = (_ldr2 + _ldr1) / 2;
-LDR2 = (_ldr4 + _ldr3) / 2;
-LDR = LDR1 - LDR2;
+#ifdef LDR_LOGIC
 
-if(LDR > LDR_THRESHOLD1)
+// Calculate Average
+_LDR1 = (_ldr2 + _ldr1) / 2;
+_LDR2 = (_ldr4 + _ldr3) / 2;
+// Calculate Difference
+_LDR = _LDR1 - _LDR2;
+
+if(stepperRunReq)
 {
-	myStepper.step(-1);
-        delay(STEP_DELAY__);
-        angle--;
-}
-else if(LDR < LDR_THRESHOLD2)
-{
-	myStepper.step(1);
-        delay(STEP_DELAY__);
-        angle++;
+	
 }
 
+	if(_LDR > LDR_THRESHOLD1)
+	{
+		myStepper.step(-1);
+		//delay(STEP_DELAY__);
+		// Start a stop watch
+		stepperStopWatch = ss;
+		stepperRunReq = true;
+		angle -= 1.8;
+	}
+	else if(_LDR < LDR_THRESHOLD2)
+	{
+		myStepper.step(1);
+		stepperStopWatch = ss;
+		stepperRunReq = true;
+		//delay(STEP_DELAY__);
+		angle += 1.8;
+	}
+}
 
 
-
-#ifdef NIGHT_SAVE_MODE
-// Stepper Off Time
-if(now.hour() >= STEPEER_OFF_TIME)
-{
-StepperStatus = false;
-disableMotor();
-#ifdef DEBUG
-Serial.println("Night mode is ON");
 #endif
-<<<<<<< HEAD
-lcd.setCursor(0,1);
-lcd.print(LSDMSG11);
-lcdUpdateFlag = true;
-=======
-/////////////////////////////////
-/////////////////////////////////
-// ADD LCD Display
->>>>>>> 62e6c21e79af73490bd2f57179a008eacbd7c521
-}
-// Stepper On Time
-else if(now.hour() >= STEPPER_ON_TIME && now.hour() < STEPEER_OFF_TIME)
+
+// Clear LCD if required depending on flag
+if(displayClearFlag == true)
 {
-StepperStatus = true;
-enableMotor();
+	lcd.clear();
+	displayClearFlag = false;
 }
-#endif
+
+// Display All Parameters in lcd
+	if(mm != MM || dd !=DD || yy != YY || dof != DOF || hh != HH || minu != MINU || ss != SS)
+	{
+		MM = mm;
+		DD = dd;
+		YY = yy;
+		DOF = dof;
+		HH = hh;
+		MINU = minu;
+		SS = ss;
+/*		lcd.setCursor(0,0);
+		lcd.print(LCDCLR);
+		lcd.setCursor(0,0);
+        lcd.print(mm);   // Month
+        lcd.write('/');
+        lcd.print(dd);   // Date
+        lcd.write('/');
+        lcd.print(yy % 2000);   // Year
+        lcd.write(' ');
+        lcd.print(dof);  // Day Of Week
+        lcd.write(' ');
+        lcd.print(hh);   // Hour
+        lcd.write(':');
+        lcd.print(minu); // Minute
+		lcd.write(':');  
+		lcd.write(ss);   // Second*/
+	}	
+/*	if(hh != HH)
+	{
+				HH = hh;
+				lcd.setCursor(0,0);
+				lcd.print(hh);
+				lcd.write(':');
+			}
+				else if(minu != MINU)
+				{
+					MINU = minu;
+					lcd.setCursor(2 - rtcstringlen,0);
+					lcd.print(minu);
+					lcd.write(':');
+				}
+	else if(ss != SS)
+	{
+		SS = ss;
+		lcd.setCursor(5 - rtcstringlen,0);
+		lcd.print(ss);
+		if(ss < 10)
+		lcd.write(' ');
+	}*/
+
+
+
+if((lSS % LCD_UPDATE_RATE) == 0)
+{
+
+	/*
+	0 -> Temperature
+	1 -> Humidity
+	2 -> LDR Difference
+	3 -> Voltage
+	4 -> Current
+	5 -> Power
+	6 -> Running Mode (Night or Day)
+	7 -> Next Data Log Interval
+	*/
+	
+if((lSS % RTC_LCD_UPDATE_RATE) == 0) {
+	if(rtcDisplayVal == 0)
+	{
+		    rtcDisplayVal++;
+			lcd.setCursor(0,0);
+			lcd.print(LCDCLR);
+			lcd.setCursor(0,0);
+			lcd.print(mm);   // Month
+			lcd.write('/');
+			lcd.print(dd);   // Date
+			lcd.write('/');
+			lcd.print(yy);   // Year
+	}
+	else if(rtcDisplayVal == 1)
+	{
+		            rtcDisplayVal++;
+					lcd.setCursor(0,0);
+					lcd.print(LCDCLR);
+					lcd.setCursor(0,0);
+		switch(dof)
+		{
+			         case 0 : lcd.print("SUNDAY    ");
+			         break;
+					 case 1 : lcd.print("MONDAY    ");
+					 break;
+					 case 2 : lcd.print("TUESDAY   ");
+					 break;
+					 case 3 : lcd.print("WEDNESDAY ");
+					 break;
+					 case 4 : lcd.print("THURSDAY  ");
+					 break;
+					 case 5 : lcd.print("FRIDAY    ");
+					 break;
+					 case 6 : lcd.print("SATURDAY  ");
+					 break;
+		}
+	}
+		else
+		{
+			rtcDisplayVal = 0;
+			lcd.setCursor(0,0);
+			lcd.print(LCDCLR);
+			lcd.setCursor(0,0);
+	        lcd.print(hh % 12);   // Hour
+	        lcd.write(':');
+	        lcd.print(minu); // Minute
+	        lcd.write(':');
+	        lcd.print(ss);
+		    lcd.print(" ");	
+			if(hh < 12)	
+			lcd.print("AM")  ;
+			else
+			lcd.print("PM");
+		}
+}
+	
+
+		if((lSS % SENSOR_LCD_VAL_UPDATE_RATE) == 0) {
+				delay(100);
+				lcd.setCursor(0,1);
+				lcd.print(LCDCLR);
+				lcd.setCursor(0,1);
+	if(DisplayVal == 0)
+	{
+		DisplayVal++;
+		lcd.print("Temp:");
+		lcd.print((int)_temp);
+		lcd.print((char)223);
+		lcd.print("C");
+		 lcd.print("    ");
+	}
+		else if(DisplayVal == 1)
+		{
+			DisplayVal++;
+			lcd.print("Humi:");
+			lcd.print((int)_humi);
+			lcd.write('%');
+			lcd.write(' ');
+			lcd.print("RH");
+			lcd.print("    ");
+		}
+			else if(DisplayVal == 2)
+			{
+				DisplayVal++;
+				lcd.print("LDR:");
+				lcd.print((int)_LDR);
+				 lcd.print("    ");
+			}
+						else if(DisplayVal == 3)
+						{
+							DisplayVal++;
+							lcd.print("VOL:");
+							lcd.print((int)Voltage);
+							lcd.print(" mV");
+							 lcd.print("    ");
+						}
+												else if(DisplayVal == 4)
+												{
+													DisplayVal++;
+													lcd.print("CUR:");
+													lcd.print((int)current);
+													lcd.print(" mA");
+													 lcd.print("    ");
+												}
+																								else if(DisplayVal == 5)
+																								{
+																									DisplayVal++;
+																									lcd.print("Power:");
+																									lcd.print((int)((Voltage * current)));
+																									lcd.print(" mw");
+																									lcd.print("    ");																								}
+																																															else if(DisplayVal == 6)
+																																															{
+																																																DisplayVal++;
+																																																lcd.print("Mode: ");
+																																																if(RunningMode == false)
+																																																lcd.print("Night Mode");
+																																																else
+																																																lcd.print("Day Mode   ");
+																																																 lcd.print("    ");
+																																							
+																																															}
+																																																							else if(DisplayVal == 7)
+																																																							{
+																																																								DisplayVal = 0;
+																																																							    lcd.print("Next:");
+																																																								lcd.print(dataLogHH % 12);
+																																																								lcd.print(":");
+																																																								lcd.print(dataLogMM);
+																																																								if(dataLogHH < 12)
+																																																								lcd.print("AM");
+																																																								else
+																																																								lcd.print("PM");
+																																																								lcd.print("    ");
+																																																							}
+																																																							
+																																																							//lSS = 0;
+		}
+																																																								
+																																																							}
+						
 
 // For debugging
 #ifdef DEBUG
-lcd.setCursor(0,0);
-lcd.print(LDR);
-lcd.print("    ");
-Serial.print(_humi);
+/*lcd.setCursor(0,0);
+lcd.print(_LDR);
+lcd.print("    ");*/
+Serial.print(mm);
+Serial.write('/');
+Serial.print(dd);
+Serial.write('/');
+Serial.print(yy);
+Serial.write(' ');
+switch(dof)
+{
+	case 0 : Serial.print("SUN"); 
+	         break;
+			 	case 1 : Serial.print("MON");
+			 	break;
+				 	case 2 : Serial.print("TUE");
+				 	break;
+					 	case 3 : Serial.print("WED");
+					 	break;
+						 	case 4 : Serial.print("THU");
+						 	break;
+							 	case 5 : Serial.print("FRI");
+							 	break;
+								 	case 6 : Serial.print("SAT");
+								 	break;
+}
+Serial.write(' ');
+Serial.print(hh,DEC);
+Serial.write(':');
+Serial.print(minu);
+Serial.write(':');
+Serial.print(ss);
 Serial.write(0x09);
 Serial.print(_temp);
 Serial.write(0x09);
-Serial.print(_ldr1);
+Serial.print(_humi);
 Serial.write(0x09);
-Serial.print(_ldr2);
-Serial.write(0x09);
-Serial.print(_ldr3);
-Serial.write(0x09);
-Serial.print(_ldr4);
-Serial.write(0x09);
-Serial.print(current);
+Serial.print(_LDR);
 Serial.write(0x09);
 Serial.print(Voltage);
 Serial.write(0x09);
-Serial.print(now.hour());
+Serial.print(current);
 Serial.write(0x09);
-Serial.print(now.minute());
-Serial.write(0x09);
-Serial.print(now.second());
 Serial.println();
 delay(_DEBUG_UART_PRINT_DELAY_);
 #endif
@@ -702,15 +991,21 @@ void bootTest(void)
   
   // GSM Modem test
   // If detected
+  bAck:
+    Tms = 0;
+	Tss = 0;
+	Timer1.initialize(Timeus);
+  Timer1.start();
   if(myModem.detectModem() == 1)         
   {
+  lcd.clear();
   lcd.print(BOOTMSG2);
   
   #ifdef DEBUG
   Serial.println(BOOTMSG2);
   #endif
   
-  ss = 0;
+  Tss = 0;
   #ifdef STARTUP_ALERT_SMS == 1
   myModem.sendSms(DAQ_SERVER_NO,START_UP_ALERT_SMS);
   #elif  STARTUP_ALERT_SMS == 2
@@ -740,17 +1035,10 @@ void bootTest(void)
   #ifdef DEBUG
   Serial.println(BOOTMSG4);
   #endif
-  
-  ss = 0;
-  Timer1.detachInterrupt();       // stop timer interrupt
   Timer1.stop();
-  // Infinite loop
-  while(true)
-  {
-    ;
-  } 
+  goto bAck;
   }
-  
+  Timer1.stop();
   delay(StartUpDelay);
   lcd.clear();
   lcd.setCursor(0,0);
@@ -768,5 +1056,4 @@ void bootTest(void)
   #endif
   
   delay(StartUpDelay);
-  lcd.clear();
 }

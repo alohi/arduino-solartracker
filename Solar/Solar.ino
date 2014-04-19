@@ -15,12 +15,18 @@
 volatile unsigned int Tms = 0;
 volatile unsigned int Tss = 0;
 
-unsigned int angle = 0;
-boolean RunningMode = true; // true -> Day Mode , false -> Night Mode
+unsigned int angle = ANGLE_START_VAL;
+unsigned char RunningMode = 0; 
+/* 0 -> Day Mode
+   1 -> Night Mode
+   2 -> No sunlight
+   3 -> Power Save
+   4 -> Min/Max Save
+   */
 boolean displayClearFlag = false;
 unsigned char rtcstringlen = 0;
-
 boolean stepperRunReq = false;
+boolean stepperDisable = false;
 
 unsigned char rtcDisplayVal = 0;
 /* 0 -> Date 
@@ -45,8 +51,8 @@ unsigned char DisplayVal = 0;
 #define ADJUST_RTC
 
 #ifdef ADJUST_RTC
-#define _DATE "Apr 17 2014"
-#define _TIME "19:23:00"
+#define _DATE "Apr 18 2014"
+#define _TIME "12:44:00"
 #endif
 
 // Timer ISR
@@ -76,11 +82,11 @@ RTC_DS1307 rtc;
 // Enable Motor
 void enableMotor(void)
 {
-		#ifdef FORCE_DISABLE_MOTOR
-		  digitalWrite(STEPPER_EN1,LOW);
-		  digitalWrite(STEPPER_EN2,LOW);
-		  return;
-		#endif
+  #ifdef FORCE_DISABLE_MOTOR
+  digitalWrite(STEPPER_EN1,LOW);
+  digitalWrite(STEPPER_EN2,LOW);
+  return;
+  #endif
   digitalWrite(STEPPER_EN1,HIGH);
   digitalWrite(STEPPER_EN2,HIGH);
 }
@@ -127,6 +133,7 @@ void setup(void)
 	   #ifdef DEBUG
 	   Serial.println("RTC is NOT running!");
 	   #endif
+	   	     rtc.adjust(DateTime(_DATE,_TIME));
    }
    else
 
@@ -138,7 +145,7 @@ void setup(void)
   //"Apr 17 2014", time = "19:19:00"
   rtc.adjust(DateTime(_DATE,_TIME));
   #endif
-  
+    rtc.adjust(DateTime("Apr 18 2014","12:00:00"));
   // Initiate LCD cursor
   lcd.setCursor(0,0);
   
@@ -163,6 +170,8 @@ float _LDR;
 int   current;
 // Solar Voltage (mV)
 int   Voltage;
+// Solar Power (mW)
+int power;
 // Alert Status
 unsigned char Status;
 
@@ -211,6 +220,7 @@ SS  = now.second();        // Second
 #ifndef NIGHT_SAVE_MODE
 #warning "Night Save mode is disabled"
 #endif
+
 #ifndef SENSOR_ALERT
 #warning "Sensor alert is disabled"
 #endif
@@ -220,14 +230,14 @@ SS  = now.second();        // Second
 #endif
 
 // Calculate next predicted interval for data logging
-#ifndef DATA_LOGGING
+#ifdef DATA_LOGGING
 if(MINU >= (60 - DATA_LOG_SMS_INTERVAL))
 {
 	dataLogMM = (MINU + DATA_LOG_SMS_INTERVAL) - 60;
 	if(HH == 23)
 	dataLogHH = 0;
 	else
-	dataLogHH = HH+1;
+	dataLogHH = HH + 1;
 }
 else
 {
@@ -246,10 +256,12 @@ Timer1.stop();
 
 enableMotor();
 
+/*dataLogHH = 12;
+dataLogMM = 00;*/
+
 // Infinite loop (It will run continuosly)
 while(1)
 {
-
 // Read All the datas
 _humi   = mySensors.getHumi();
 _temp   = mySensors.getTemp(DEGC);
@@ -259,6 +271,7 @@ _ldr3   = mySensors.getLight(3);
 _ldr4   = mySensors.getLight(4);
 current = mySensors.getCurrent();
 Voltage = mySensors.getVoltage();
+power = current * Voltage;
 
 DateTime now = rtc.now();
 
@@ -279,40 +292,61 @@ _LDR = _LDR1 - _LDR2;
 
 lSS = ss;
 
-if(hh < 10)
+
+/*/////////////////////////////////////////////////////////////
+/////////////////////////////// Check for a mode///////////////
+///////////////////////////////////////////////////////////////
+*/
+   /*
+   0 -> Day Mode
+   1 -> Night Mode
+   2 -> No sunlight
+   3 -> Power Save
+   4 -> Min/Max Save
+   */
+#ifdef NO_SUNLIGHT_MODE
+if(power >= POWER_OFFSET_VAL)
 {
-	if(minu < 10)
-	rtcstringlen = 0;
-	else
-	rtcstringlen = 1;
+	RunningMode = 2;
+	disableMotor();
+	stepperDisable = true;
+	angle = ANGLE_START_VAL;
 }
-else
+#endif
+
+#ifdef POWER_SAVE
+if(power < POWER_LOW_THRESHOLD)
 {
-		if(minu < 10)
-		rtcstringlen = 1;
-		else
-		rtcstringlen = 2;
+	RunningMode = 3;
+	disableMotor();
+	stepperDisable = true;
+	angle = ANGLE_START_VAL;
 }
+#endif
 
-
-/*
-lcd.setCursor(0,0);
-lcd.print(Tss);*/
-//lcd.clear();
-
+#ifdef MIN_MAX_STOP
+if(angle >= ANGLE_MAX)
+{
+	RunningMode = 4;
+	disableMotor();
+	stepperDisable = true;
+	angle = ANGLE_START_VAL;
+}
+#endif
 
 // Night Mode or Day Mode
-#ifdef NIGHT_SAVE_MODE
-// Stepper Off Time ( Night Mode)
-if(hh >= STEPEER_OFF_TIME_HH && minu >= STEPEER_OFF_TIME_MM)
-{
-	RunningMode = false;
-}
+#ifndef NIGHT_SAVE_MODE
 // Stepper On Time (Day Mode)
-else if(hh >= STEPPER_ON_TIME_HH && minu >= STEPEER_ON_TIME_MM)
+if(hh >= STEPPER_ON_TIME_HH && minu >= STEPPER_ON_TIME_MM && hh <= STEPPER_OFF_TIME_HH && minu <= STEPPER_OFF_TIME_MM)
 {
-	RunningMode = true;
+	RunningMode = 0;
 	enableMotor();
+}
+// Stepper Off Time ( Night Mode)
+if(hh >= STEPPER_OFF_TIME_HH && minu >= STEPPER_OFF_TIME_MM && hh <= STEPPER_ON_TIME_HH && minu <= STEPPER_ON_TIME_MM)
+{
+	RunningMode = 1;
+	disableMotor();
 }
 #endif
 
@@ -477,6 +511,9 @@ if(minu == dataLogMM && hh == dataLogHH)
   lcd.setCursor(0,1);
   lcd.print(LCDMSG9);
   
+  	Serial.println("AT+CMGF=1");
+  	delay(500);
+  
   // Send Data to DAQ_NO
   Serial.print("AT+CMGS=\"");
   Serial.print(DAQ_SERVER_NO);
@@ -498,7 +535,7 @@ if(minu == dataLogMM && hh == dataLogHH)
   Serial.print(minu); // Minute
   Serial.write(':');
   Serial.print(ss);   // Second
-
+Serial.write(',');
 // Send Sensor Data
   Serial.print(_temp);
   Serial.write(',');
@@ -522,6 +559,9 @@ if(minu == dataLogMM && hh == dataLogHH)
     lcd.setCursor(0,1);
     lcd.print(LCDMSG8);
   
+    	Serial.println("AT+CMGF=1");
+    	delay(500);
+  
   // Send to User mobile
   Serial.print("AT+CMGS=\"");
   Serial.print(USER_NO);
@@ -543,7 +583,7 @@ if(minu == dataLogMM && hh == dataLogHH)
   Serial.print(minu); // Minute
   Serial.write(':');
   Serial.print(ss);   // Second
-
+Serial.write(',');
   // Send Sensor Data
   Serial.print(_temp);
   Serial.write(',');
@@ -566,6 +606,9 @@ if(minu == dataLogMM && hh == dataLogHH)
     lcd.setCursor(0,1);
     lcd.print(LCDMSG10);
   
+    	Serial.println("AT+CMGF=1");
+    	delay(500);
+  
   // Send to both  
   Serial.print("AT+CMGS=\"");
   Serial.print(DAQ_SERVER_NO);
@@ -587,7 +630,7 @@ if(minu == dataLogMM && hh == dataLogHH)
    Serial.print(minu); // Minute
    Serial.write(':');
    Serial.print(ss);   // Second
-
+Serial.write(',');
    // Send Sensor Data
    Serial.print(_temp);
    Serial.write(',');
@@ -604,7 +647,10 @@ if(minu == dataLogMM && hh == dataLogHH)
    Serial.print(angle);
    Serial.write(0x1A);
   
-  delay(SMS_NO_TEXT_DELAY*2);
+    delay(SMS_NO_TEXT_DELAY*2);
+
+  	Serial.println("AT+CMGF=1");
+  	delay(500);
 
      Serial.print("AT+CMGS=\"");
      Serial.print(USER_NO);
@@ -626,7 +672,7 @@ if(minu == dataLogMM && hh == dataLogHH)
     Serial.print(minu); // Minute
     Serial.write(':');
     Serial.print(ss);   // Second
-
+Serial.write(',');
     // Send Sensor Data
     Serial.print(_temp);
     Serial.write(',');
@@ -659,7 +705,7 @@ if(minu >= (60 - DATA_LOG_SMS_INTERVAL))
 }
 else
 {
-	dataLogMM = mm + DATA_LOG_SMS_INTERVAL;
+	dataLogMM = minu + DATA_LOG_SMS_INTERVAL;
 	dataLogHH = hh;
 }
 }
@@ -668,49 +714,17 @@ else
    displayClearFlag = true;
 #endif
 
-#ifdef LDR_LOGIC
 
-// Calculate Average
-_LDR1 = (_ldr2 + _ldr1) / 2;
-_LDR2 = (_ldr4 + _ldr3) / 2;
-// Calculate Difference
-_LDR = _LDR1 - _LDR2;
-
-if(stepperRunReq)
-{
-	
-}
-
-	if(_LDR > LDR_THRESHOLD1)
-	{
-		myStepper.step(-1);
-		//delay(STEP_DELAY__);
-		// Start a stop watch
-		stepperStopWatch = ss;
-		stepperRunReq = true;
-		angle -= 1.8;
-	}
-	else if(_LDR < LDR_THRESHOLD2)
-	{
-		myStepper.step(1);
-		stepperStopWatch = ss;
-		stepperRunReq = true;
-		//delay(STEP_DELAY__);
-		angle += 1.8;
-	}
-}
-
-
-#endif
-
+/*
 // Clear LCD if required depending on flag
 if(displayClearFlag == true)
 {
 	lcd.clear();
 	displayClearFlag = false;
 }
+*/
 
-// Display All Parameters in lcd
+    // Update Global RTC
 	if(mm != MM || dd !=DD || yy != YY || dof != DOF || hh != HH || minu != MINU || ss != SS)
 	{
 		MM = mm;
@@ -720,48 +734,9 @@ if(displayClearFlag == true)
 		HH = hh;
 		MINU = minu;
 		SS = ss;
-/*		lcd.setCursor(0,0);
-		lcd.print(LCDCLR);
-		lcd.setCursor(0,0);
-        lcd.print(mm);   // Month
-        lcd.write('/');
-        lcd.print(dd);   // Date
-        lcd.write('/');
-        lcd.print(yy % 2000);   // Year
-        lcd.write(' ');
-        lcd.print(dof);  // Day Of Week
-        lcd.write(' ');
-        lcd.print(hh);   // Hour
-        lcd.write(':');
-        lcd.print(minu); // Minute
-		lcd.write(':');  
-		lcd.write(ss);   // Second*/
-	}	
-/*	if(hh != HH)
-	{
-				HH = hh;
-				lcd.setCursor(0,0);
-				lcd.print(hh);
-				lcd.write(':');
-			}
-				else if(minu != MINU)
-				{
-					MINU = minu;
-					lcd.setCursor(2 - rtcstringlen,0);
-					lcd.print(minu);
-					lcd.write(':');
-				}
-	else if(ss != SS)
-	{
-		SS = ss;
-		lcd.setCursor(5 - rtcstringlen,0);
-		lcd.print(ss);
-		if(ss < 10)
-		lcd.write(' ');
-	}*/
+	}
 
-
-
+// LCD Update
 if((lSS % LCD_UPDATE_RATE) == 0)
 {
 
@@ -776,7 +751,8 @@ if((lSS % LCD_UPDATE_RATE) == 0)
 	7 -> Next Data Log Interval
 	*/
 	
-if((lSS % RTC_LCD_UPDATE_RATE) == 0) {
+/*if((lSS % RTC_LCD_UPDATE_RATE) == 0) 
+{*/
 	if(rtcDisplayVal == 0)
 	{
 		    rtcDisplayVal++;
@@ -830,10 +806,11 @@ if((lSS % RTC_LCD_UPDATE_RATE) == 0) {
 			else
 			lcd.print("PM");
 		}
-}
+//}
 	
 
-		if((lSS % SENSOR_LCD_VAL_UPDATE_RATE) == 0) {
+	/*	if((lSS % SENSOR_LCD_VAL_UPDATE_RATE) == 0) 
+		{*/
 				delay(100);
 				lcd.setCursor(0,1);
 				lcd.print(LCDCLR);
@@ -885,38 +862,90 @@ if((lSS % RTC_LCD_UPDATE_RATE) == 0) {
 																									DisplayVal++;
 																									lcd.print("Power:");
 																									lcd.print((int)((Voltage * current)));
-																									lcd.print(" mw");
+																									lcd.print(" mW");
 																									lcd.print("    ");																								}
 																																															else if(DisplayVal == 6)
 																																															{
 																																																DisplayVal++;
 																																																lcd.print("Mode: ");
-																																																if(RunningMode == false)
+																																																   /*
+   0 -> Day Mode
+   1 -> Night Mode
+   2 -> No sunlight
+   3 -> Power Save
+   4 -> Min/Max Save
+   */
+																																																if(RunningMode == 0)
+																																																lcd.print("Day Mode");
+																																																else if(RunningMode == 1)
 																																																lcd.print("Night Mode");
+																																																else if(RunningMode == 2)
+																																																lcd.print("No Sun");
+																																																else if(RunningMode == 3)
+																																																lcd.print("Power Save");
+																																																else if(RunningMode == 4)
+																																																lcd.print("Min/Max");
 																																																else
-																																																lcd.print("Day Mode   ");
-																																																 lcd.print("    ");
+																																																lcd.print("error   ");
+																																																lcd.print("     ");
 																																							
 																																															}
 																																																							else if(DisplayVal == 7)
 																																																							{
-																																																								DisplayVal = 0;
+																																																								DisplayVal++;
 																																																							    lcd.print("Next:");
 																																																								lcd.print(dataLogHH % 12);
-																																																								lcd.print(":");
+																																																								lcd.write(':');
 																																																								lcd.print(dataLogMM);
+																																																								lcd.write(' ');
 																																																								if(dataLogHH < 12)
 																																																								lcd.print("AM");
 																																																								else
 																																																								lcd.print("PM");
 																																																								lcd.print("    ");
 																																																							}
+																																																												else if(DisplayVal == 8)
+																																																												{
+																																																													DisplayVal = 0;
+																																																													lcd.print("Angle:");
+																																																													lcd.print(angle);
+																																																													lcd.print("    ");
+																																																												}
 																																																							
-																																																							//lSS = 0;
-		}
+																																																					
+		//}
 																																																								
 																																																							}
-						
+		////////////////////////////////////////////////////////////////
+////////// Delay loop has to modify
+////////// Now it is staying for STEP_DELAY__ ms 
+
+#ifdef LDR_LOGIC
+
+// Calculate Average
+_LDR1 = (_ldr2 + _ldr1) / 2;
+_LDR2 = (_ldr4 + _ldr3) / 2;
+// Calculate Difference
+_LDR = _LDR1 - _LDR2;
+
+	if(_LDR > LDR_THRESHOLD1)
+	{
+		myStepper.step(-1);
+		delay(STEP_DELAY__);
+	   /* Start a stop watch
+		stepperStopWatch = ss;+
+		stepperRunReq = true;*/
+		angle -= 1.8;
+	}
+	else if(_LDR < LDR_THRESHOLD2)
+	{
+		myStepper.step(1);
+		/*stepperStopWatch = ss;
+		stepperRunReq = true;*/
+		delay(STEP_DELAY__);
+		angle += 1.8;
+	}
+#endif				
 
 // For debugging
 #ifdef DEBUG
@@ -952,6 +981,10 @@ Serial.write(':');
 Serial.print(minu);
 Serial.write(':');
 Serial.print(ss);
+Serial.write(0x09);
+Serial.print(dataLogHH);
+Serial.write(0x09);
+Serial.print(dataLogMM);
 Serial.write(0x09);
 Serial.print(_temp);
 Serial.write(0x09);

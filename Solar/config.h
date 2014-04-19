@@ -30,8 +30,8 @@
 #define __config_h__
 
 // Build Configuration
-#define DEBUG
-//#define RELEASE
+//#define DEBUG
+#define RELEASE
 
 // Includes
 #include <Arduino.h>
@@ -43,10 +43,10 @@
 #define EN2  8
 
 // Define DAQ server Mobile Number
-#define DAQ_SERVER_NO "9342833087"
+#define DAQ_SERVER_NO "7259634462"
 
 // Define User Mobile Number
-#define USER_NO       "9342833087"
+#define USER_NO       "7259634462"
 
 // Delay for each step with LDR Logic
 #define STEP_DELAY__   3000
@@ -62,8 +62,8 @@
 < +40 : Clock wise
 < -40 : Anticlockwise
 */
-#define LDR_THRESHOLD1 +10
-#define LDR_THRESHOLD2 -10
+#define LDR_THRESHOLD1 +7
+#define LDR_THRESHOLD2 -7
 
 // External ADC
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +87,6 @@
 #define STEPPER_EN1   6
 #define STEPPER_EN2   7
 
-// Night Mode Parameters
-#define STEPEER_OFF_TIME_HH 18 // 0 - 24 (24 Hour Format)
-#define STEPEER_ON_TIME_HH  6  // 0 - 24 (24 Hour Format)
-#define STEPEER_OFF_TIME_MM 0  // 0 - 24 (24 Hour Format)
-#define STEPEER_ON_TIME_MM  0  // 0 - 24 (24 Hour Format)
-
 // Stepper Motor Speed in RPM
 #define STEPPER_SPEED_RPM 60                                
 #define STEPPER_STEPS     200
@@ -109,7 +103,7 @@
 #define BAUD   9600
 
 // Temperture Calculations
-#define tempMulC         0.488
+#define tempMulC        0.488
 #define calcDC(val)     (val   * tempMulC)
 #define calcDF(val)     (((val * tempMulC) * 1.8) + 32)
 
@@ -129,7 +123,7 @@
 #define StartUpDelay 2000
 
 // 
-#define STARTUP_ALERT_SMS 4
+#define STARTUP_ALERT_SMS 2
 // 0 -> Disable, 1 -> To Daq server, 2 -> To user, 3 -> Both daq server and user
 
 // Alert type
@@ -139,7 +133,7 @@
 #define DATA_LOG_MODE     1
 //0 -> Send Sms to DAQ server,  1 -> Send sms to user, 3 -> Send sms to both user and DAQ server
 
-// Delay for sms
+// Delay for sms (Don't change)
 #define SMS_NO_TEXT_DELAY 2000
 
 extern volatile unsigned int Tss;
@@ -149,20 +143,37 @@ extern volatile unsigned int Tss;
 #define DEGF 1
 
 
-// Voltage Mul factor
+// Voltage Mul factor (Don't change) Voltage divider
 #define SOLAR_MUL_FACTOR 4
 
 
 // Each macro enables different feature
-//#define NIGHT_SAVE_MODE  // Night Save Mode is On, So motor is Off
-//#define SENSOR_ALERT     // Sensor Alert is On (i.e It checks sensor data if any abnormal value it generates different alert defined in ALERT_TYPE macro
-//#define   LDR_LOGIC
-//#define DATA_LOGGING
+#define NIGHT_SAVE_MODE  // Night Save Mode is On, So motor is Off
+#define SENSOR_ALERT     // Sensor Alert is On (i.e It checks sensor data if any abnormal value it generates different alert defined in ALERT_TYPE macro
+#define LDR_LOGIC
+#define DATA_LOGGING
+//#define NO_SUNLIGHT_MODE
+//#define POWER_SAVE
+//#define MIN_MAX_STOP
 
-#define FORCE_DISABLE_MOTOR 
+// Night Mode Parameters
+#define STEPPER_OFF_TIME_HH  18  // 0 - 24 (24 Hour Format)
+#define STEPPER_OFF_TIME_MM  0  // 0 - 24 (24 Hour Format)
+#define STEPPER_ON_TIME_HH   6 // 0 - 24 (24 Hour Format)
+#define STEPPER_ON_TIME_MM   0  // 0 - 59 (24 Hour Format)
+
+#define ANGLE_MIN 0
+#define ANGLE_MAX 30
+
+#define ANGLE_START_VAL 0
+
+#define POWER_LOW_THRESHOLD 6
+#define POWER_OFFSET_VAL    19
+
+//#define FORCE_DISABLE_MOTOR 
 
 #define SENSOR_LCD_VAL_UPDATE_RATE 5
-#define  RTC_LCD_UPDATE_RATE 1
+#define  RTC_LCD_UPDATE_RATE       5
 
 // Upper and lower limits
 #define HUMID_UPPER_LIMIT      70  // 70% RH
@@ -177,7 +188,7 @@ extern volatile unsigned int Tss;
 #define _DEBUG_UART_PRINT_DELAY_ 500
 #endif
 
-#define LCD_UPDATE_RATE 2 // in seconds
+#define LCD_UPDATE_RATE 5 // in seconds
 
 #endif
 

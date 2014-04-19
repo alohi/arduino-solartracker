@@ -182,24 +182,15 @@ int Sensors::getCurrent(void)
  unsigned int Avg = 0;
  unsigned char buff[10];
  
-  for(i=0;i<=100;i++)
+ for(i=0;i<=100;i++)
  {
  pcf8591Read(buff);
  Avg = Avg + (int)buff[CUR];
-// val = (int)buff[HUMI];
  }
- 
-/* pcf8591Read(buff);
- val = (int)buff[CUR];*/
  val = Avg / 100;
  v = adc_to_voltage(val);
-// cur = map(v,2600,3200,0,10000);
- 
- //cur = (v - 2600) * (10000 - 0) / (3200 - 2600) + 0;
- //cur = (int)map(v,2470,2580,0,500);
-return v;
-//return v;
-//return v;
+ cur = map(v,2600,3200,0,1100);
+ return cur;
 }
 
 unsigned int Sensors::getVoltage(void)
@@ -210,22 +201,14 @@ unsigned int Sensors::getVoltage(void)
  unsigned int Avg = 0;
   unsigned int i;
   
-   for(i=0;i<=100;i++)
+ for(i=0;i<=100;i++)
  {
  pcf8591Read(buff);
  Avg = Avg + (int)buff[VOL];
-// val = (int)buff[HUMI];
  }
- 
-/* pcf8591Read(buff);
- val = (int)buff[CUR];*/
  val = Avg / 100;
- 
-/* pcf8591Read(buff);
- val = (int)buff[VOL];*/
  v = adc_to_voltage(val);  
-// return v;// *  SOLAR_MUL_FACTOR;
-return val;
+ return v * SOLAR_MUL_FACTOR;
 }
 
 

@@ -73,6 +73,8 @@ return 0;
 **/
 void gsmModem::sendSms(char *No,char *Msg)
 {
+	Serial.println("AT+CMGF=1");
+	delay(100);
   Serial.println(gsmSendSmsCmd1);
   delay(50);
   Serial.print(gsmSendSmsCmd2);
@@ -80,7 +82,7 @@ void gsmModem::sendSms(char *No,char *Msg)
   Serial.print(No);
   Serial.write('"');
   Serial.println();
-  delay(100);
+  delay(2000);
   Serial.println(Msg);
   delay(5);
   Serial.write(ASCII_SUB);

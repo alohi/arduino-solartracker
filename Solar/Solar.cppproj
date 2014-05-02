@@ -65,8 +65,8 @@
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
@@ -102,8 +102,8 @@
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
@@ -128,17 +128,17 @@
     </ToolchainSettings>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.board.name>atmega328</arduino.board.name>
-        <arduino.board.desc>Arduino Duemilanove w/ ATmega328</arduino.board.desc>
-        <arduino.board.property_bag>name=Arduino Duemilanove w/ ATmega328
+        <arduino.board.name>uno</arduino.board.name>
+        <arduino.board.desc>Arduino Uno</arduino.board.desc>
+        <arduino.board.property_bag>name=Arduino Uno
 upload.protocol=arduino
-upload.maximum_size=30720
-upload.speed=57600
-bootloader.low_fuses=0xFF
-bootloader.high_fuses=0xDA
+upload.maximum_size=32256
+upload.speed=115200
+bootloader.low_fuses=0xff
+bootloader.high_fuses=0xde
 bootloader.extended_fuses=0x05
-bootloader.path=atmega
-bootloader.file=ATmegaBOOT_168_atmega328.hex
+bootloader.path=optiboot
+bootloader.file=optiboot_atmega328.hex
 bootloader.unlock_bits=0x3F
 bootloader.lock_bits=0x0F
 build.mcu=atmega328p
@@ -148,7 +148,7 @@ build.variant=standard
 runtime.ide.path=D:\arduino-1.0.5
 build.system.path=D:\arduino-1.0.5\hardware\arduino\system
 runtime.ide.version=105
-originalid=atmega328
+originalid=uno
 vm.platform.root.path=D:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\arduino10x
 vm.core.include=arduino.h
 ide.hint=Arduino 0023 and 1.0.x Ide
@@ -174,7 +174,7 @@ vm.debug=true
 software=ARDUINO
 ide.appid=arduino10x
 location.sketchbook=C:\Users\SRIHARSHA\Documents\Arduino
-build.board=AVR_ATMEGA328
+build.board=AVR_UNO
 vm.boardsource.path=D:\arduino-1.0.5\hardware\arduino
 vm.platformname.name=avr
 build.arch=AVR
@@ -183,8 +183,8 @@ build.arch=AVR
         <arduino.build.f_cpu>16000000L</arduino.build.f_cpu>
         <arduino.build.core>arduino</arduino.build.core>
         <arduino.upload.protocol>arduino</arduino.upload.protocol>
-        <arduino.upload.speed>57600</arduino.upload.speed>
-        <arduino.upload.maximum_size>30720</arduino.upload.maximum_size>
+        <arduino.upload.speed>115200</arduino.upload.speed>
+        <arduino.upload.maximum_size>32256</arduino.upload.maximum_size>
         <visualmicro.application.name>arduino10x</visualmicro.application.name>
         <visualmicro.package.name>arduino</visualmicro.package.name>
         <visualmicro.platform.name>avr</visualmicro.platform.name>
@@ -217,8 +217,8 @@ build.arch=AVR
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
@@ -254,8 +254,8 @@ build.arch=AVR
             <Value>D:\arduino-1.0.5\hardware\arduino\variants\standard</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal</Value>
             <Value>D:\arduino-1.0.5\libraries\LiquidCrystal\utility</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo</Value>
-            <Value>D:\arduino-1.0.5\libraries\Servo\utility</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper</Value>
+            <Value>D:\arduino-1.0.5\libraries\Stepper\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire</Value>
             <Value>D:\arduino-1.0.5\libraries\Wire\utility</Value>
             <Value>D:\arduino-1.0.5\libraries\RTClib</Value>
@@ -280,17 +280,17 @@ build.arch=AVR
     </ToolchainSettings>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.board.name>atmega328</arduino.board.name>
-        <arduino.board.desc>Arduino Duemilanove w/ ATmega328</arduino.board.desc>
-        <arduino.board.property_bag>name=Arduino Duemilanove w/ ATmega328
+        <arduino.board.name>uno</arduino.board.name>
+        <arduino.board.desc>Arduino Uno</arduino.board.desc>
+        <arduino.board.property_bag>name=Arduino Uno
 upload.protocol=arduino
-upload.maximum_size=30720
-upload.speed=57600
-bootloader.low_fuses=0xFF
-bootloader.high_fuses=0xDA
+upload.maximum_size=32256
+upload.speed=115200
+bootloader.low_fuses=0xff
+bootloader.high_fuses=0xde
 bootloader.extended_fuses=0x05
-bootloader.path=atmega
-bootloader.file=ATmegaBOOT_168_atmega328.hex
+bootloader.path=optiboot
+bootloader.file=optiboot_atmega328.hex
 bootloader.unlock_bits=0x3F
 bootloader.lock_bits=0x0F
 build.mcu=atmega328p
@@ -300,7 +300,7 @@ build.variant=standard
 runtime.ide.path=D:\arduino-1.0.5
 build.system.path=D:\arduino-1.0.5\hardware\arduino\system
 runtime.ide.version=105
-originalid=atmega328
+originalid=uno
 vm.platform.root.path=D:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\arduino10x
 vm.core.include=arduino.h
 ide.hint=Arduino 0023 and 1.0.x Ide
@@ -326,7 +326,7 @@ vm.debug=true
 software=ARDUINO
 ide.appid=arduino10x
 location.sketchbook=C:\Users\SRIHARSHA\Documents\Arduino
-build.board=AVR_ATMEGA328
+build.board=AVR_UNO
 vm.boardsource.path=D:\arduino-1.0.5\hardware\arduino
 vm.platformname.name=avr
 build.arch=AVR
@@ -335,8 +335,8 @@ build.arch=AVR
         <arduino.build.f_cpu>16000000L</arduino.build.f_cpu>
         <arduino.build.core>arduino</arduino.build.core>
         <arduino.upload.protocol>arduino</arduino.upload.protocol>
-        <arduino.upload.speed>57600</arduino.upload.speed>
-        <arduino.upload.maximum_size>30720</arduino.upload.maximum_size>
+        <arduino.upload.speed>115200</arduino.upload.speed>
+        <arduino.upload.maximum_size>32256</arduino.upload.maximum_size>
         <visualmicro.application.name>arduino10x</visualmicro.application.name>
         <visualmicro.package.name>arduino</visualmicro.package.name>
         <visualmicro.platform.name>avr</visualmicro.platform.name>
@@ -372,9 +372,6 @@ build.arch=AVR
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="TimerOne.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Visual Micro\.Solar.vsarduino.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

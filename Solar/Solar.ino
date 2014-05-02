@@ -11,9 +11,14 @@
 #include <Stepper.h>
 
 
+unsigned char TempWarning = 0;
+unsigned char HumidWarning = 0;
+
 // Globals for Timer Calculation
 volatile unsigned int Tms = 0;
 volatile unsigned int Tss = 0;
+
+unsigned char prevAlert = 0;
 
 unsigned int angle = ANGLE_START_VAL;
 unsigned char RunningMode = 0; 
@@ -98,6 +103,27 @@ void disableMotor(void)
   digitalWrite(STEPPER_EN2,LOW);
 }
 
+void testMotor(void)
+{
+	char c;
+	enableMotor();
+	if(Serial.available())
+	{
+		c = Serial.read();
+		switch(c)
+		{
+			case 'a' : 	myStepper.step(1);
+Serial.println("Motor Clock wise");
+			break;
+			case 'b' : 	myStepper.step(-1);
+Serial.println("Motor anticlock wise");
+			break;			
+		}
+	}
+
+	
+}
+
 
 
 // Setup executes once on start up
@@ -157,6 +183,26 @@ void setup(void)
   Timer1.attachInterrupt(timer1Isr);
 }
 
+void testMotorCont(void)
+{
+	int i;
+	enableMotor();
+	while(1)
+	{
+		for(i=0;i<160;i++)
+		{
+			myStepper.step(1);
+			delay(30);
+		}
+		/*		for(i=0;i<160;i++)
+				{
+					myStepper.step(-1);
+					delay(30);
+				}*/
+		
+	}
+}
+
 void loop(void)
 {
 	
@@ -205,6 +251,8 @@ unsigned char stepperStopWatch = 0;
 
 
 DateTime now = rtc.now();
+while(1)
+testMotor();
 
 // Store Global DateTime
 MM  = now.month();         // Month
@@ -274,6 +322,11 @@ Voltage = mySensors.getVoltage();
 power = current * Voltage;
 
 DateTime now = rtc.now();
+
+while(1)
+{
+	testMotor();
+}
 
 // GET RTC Date and time
 mm  = now.month();         // Month
@@ -370,27 +423,43 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
   #error "Invalid Alert Type"
   #endif
  
+ // Humidity
   if(_humi > HUMID_UPPER_LIMIT)
   {
     Status = 0;
+	if(HumidWarning != 1)
+	HumidWarning = 1;
   }
   else if(_humi < HUMID_LOWER_LIMIT)
   {
     Status = 1;
+	if(HumidWarning != 2)
+	HumidWarning = 2;
   }
-  else if(_temp > TEMPR_UPPER_LIMIT )
+  else
+  HumidWarning = 0;
+  
+  // Temperature
+  if(_temp > TEMPR_UPPER_LIMIT )
   {
-    Status = 2;
+	  if(TempWarning != 1)
+	  TempWarning = 1;
+      Status = 2;
   }
   else if(_temp < TEMPR_LOWER_LIMIT)
   {
+	  if(TempWarning != 2)
+	TempWarning = 2;
     Status = 3;
   }
   else
   {
      Status = 4;
+	 TempWarning = 0;
   }
   
+  if(TempWarning > 0 || HumidWarning > 0)
+  {
    if(Status == 0)
    {
              #if ALERT_TYPE == 1
@@ -488,6 +557,7 @@ if(_humi > HUMID_UPPER_LIMIT || _humi < HUMID_LOWER_LIMIT || _temp > TEMPR_UPPER
       // Its invalid
       // Dummy entry
     }
+  }
   
    // Put Invalid entry value for status
    Status = 10;  
@@ -537,9 +607,9 @@ if(minu == dataLogMM && hh == dataLogHH)
   Serial.print(ss);   // Second
 Serial.write(',');
 // Send Sensor Data
-  Serial.print(_temp);
+  Serial.print(_temp); // Temp
   Serial.write(',');
-  Serial.print(_humi);
+  Serial.print(_humi); // 
   Serial.write(',');
   Serial.print(_LDR1);
   Serial.write(',');
@@ -839,7 +909,7 @@ if((lSS % LCD_UPDATE_RATE) == 0)
 				DisplayVal++;
 				lcd.print("LDR:");
 				lcd.print((int)_LDR);
-				 lcd.print("    ");
+				 lcd.print(" %  ");
 			}
 						else if(DisplayVal == 3)
 						{

@@ -79,13 +79,13 @@ float Sensors::getHumi(void)
  unsigned char buff[10];
  float temp;
  
- for(i=0;i<=100;i++)
+ for(i=0;i<=HUMI_SAMPLE_VAL;i++)
  {
  pcf8591Read(buff);
  Avg = Avg + (int)buff[HUMI];
 // val = (int)buff[HUMI];
  }
- val = Avg / 100;
+ val = Avg / HUMI_SAMPLE_VAL;
  voltage = adc_to_voltage(val);
  if(voltage >= 740 && voltage <= 950)
  {
@@ -152,21 +152,21 @@ unsigned long Sensors::getLight(unsigned char Ch)
  unsigned char i;
  switch(Ch)
  {
-   case 1 : for(i=0;i<50;i++)
+   case 1 : for(i=0;i<LDR_DATA_SAMPLES;i++)
             ldr = ldr + calcLight(analogRead(LDR1));
-	    return ldr/50;
+	    return ldr/LDR_DATA_SAMPLES;
             break;
-   case 2 : for(i=0;i<50;i++)
+   case 2 : for(i=0;i<LDR_DATA_SAMPLES;i++)
             ldr = ldr + calcLight(analogRead(LDR2));
-            return ldr/50;
+            return ldr/LDR_DATA_SAMPLES;
             break;
-   case 3 : for(i=0;i<50;i++)
+   case 3 : for(i=0;i<LDR_DATA_SAMPLES;i++)
             ldr = ldr + calcLight(analogRead(LDR3));
-            return ldr/50;
+            return ldr/LDR_DATA_SAMPLES;
             break;
-   case 4 : for(i=0;i<50;i++)
+   case 4 : for(i=0;i<LDR_DATA_SAMPLES;i++)
             ldr = ldr + calcLight(analogRead(LDR4));
-            return ldr/50;
+            return ldr/LDR_DATA_SAMPLES;
             break;
    default: return ChannelInvalid;
             break;
@@ -182,14 +182,14 @@ int Sensors::getCurrent(void)
  unsigned int Avg = 0;
  unsigned char buff[10];
  
- for(i=0;i<=100;i++)
+ for(i=0;i<=CURRENT_SAMPLE_VAL;i++)
  {
  pcf8591Read(buff);
  Avg = Avg + (int)buff[CUR];
  }
- val = Avg / 100;
+ val = Avg / CURRENT_SAMPLE_VAL;
  v = adc_to_voltage(val);
- cur = map(v,2600,3200,0,1100);
+ cur = map(v,2432,3200,0,1100);
  return cur;
 }
 
@@ -201,12 +201,12 @@ unsigned int Sensors::getVoltage(void)
  unsigned int Avg = 0;
   unsigned int i;
   
- for(i=0;i<=100;i++)
+ for(i=0;i<=VOLTAGE_SAMPLE;i++)
  {
  pcf8591Read(buff);
  Avg = Avg + (int)buff[VOL];
  }
- val = Avg / 100;
+ val = Avg / VOLTAGE_SAMPLE;
  v = adc_to_voltage(val);  
  return v * SOLAR_MUL_FACTOR;
 }

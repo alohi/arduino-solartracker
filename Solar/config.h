@@ -30,8 +30,8 @@
 #define __config_h__
 
 // Build Configuration
-//#define DEBUG
-#define RELEASE
+#define DEBUG
+//#define RELEASE
 
 // Includes
 #include <Arduino.h>
@@ -62,8 +62,8 @@
 < +40 : Clock wise
 < -40 : Anticlockwise
 */
-#define LDR_THRESHOLD1 +7
-#define LDR_THRESHOLD2 -7
+#define LDR_THRESHOLD1 +2
+#define LDR_THRESHOLD2 -2
 
 // External ADC
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@
 // Pin Definition for Humidity Sensor (HSM-20G)                                      //
 #define HUMI  1 // Error fixed                                                       //                         
                                                                                      //
-// Pin Definition for Temperature Sensor (DS1820)                                    //
+// Pin Definition for Temperature Sensor (LM 35)                                    //
 #define TEMP  0   // Error fixed                                                     //                        
                                                                                      //
 // Voltage and current input for ADC (For Solar Power Calculations)                  //
@@ -111,7 +111,7 @@
 #define calcHum(val)    val
 
 // Light Intensity Calculations
-#define calcLight(val)  val
+#define calcLight(val)  val//map(val,0,1023,0,100)
 
 // Return value for method getTemp if channel number is invalid
 #define ChannelInvalid 0xFF
@@ -123,7 +123,7 @@
 #define StartUpDelay 2000
 
 // 
-#define STARTUP_ALERT_SMS 2
+#define STARTUP_ALERT_SMS 0
 // 0 -> Disable, 1 -> To Daq server, 2 -> To user, 3 -> Both daq server and user
 
 // Alert type
@@ -176,8 +176,8 @@ extern volatile unsigned int Tss;
 #define  RTC_LCD_UPDATE_RATE       5
 
 // Upper and lower limits
-#define HUMID_UPPER_LIMIT      70  // 70% RH
-#define HUMID_LOWER_LIMIT      20  // 20% RH
+#define HUMID_UPPER_LIMIT      15  // 70% RH
+#define HUMID_LOWER_LIMIT      0  // 20% RH
 #define TEMPR_UPPER_LIMIT      100 // 100 degree C
 #define TEMPR_LOWER_LIMIT      10  // 10 degree C
 

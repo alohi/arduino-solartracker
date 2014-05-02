@@ -43,6 +43,11 @@ class Sensors
   unsigned int getVoltage(void);
 };
 
+#define LDR_DATA_SAMPLES   50
+#define HUMI_SAMPLE_VAL    50
+#define CURRENT_SAMPLE_VAL 50
+#define VOLTAGE_SAMPLE     50
+
 #define adc_to_voltage(val)  val * (5000/255)
 #define lm35_temp_conversion(val) adc_to_voltage(val) / 10
 #define degreetoFaranheit(val) (val * (9/5)) + 32
